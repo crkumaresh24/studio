@@ -1,26 +1,51 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import "./App.css";
+import {
+  Box,
+  createTheme,
+  CssBaseline,
+  Paper,
+  ThemeProvider,
+} from "@mui/material";
+import AppMenu from "./AppMenu";
+import { Outlet } from "react-router-dom";
+import '@fontsource/roboto/300.css';
+import '@fontsource/roboto/400.css';
+import '@fontsource/roboto/500.css';
+import '@fontsource/roboto/700.css';
 
-function App() {
+
+const darkTheme = createTheme({
+  palette: {
+    mode: "dark",
+  },
+});
+
+const App = () => {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
+    <ThemeProvider theme={darkTheme}>
+      <CssBaseline />
+      <main>
+        <AppMenu />
+        <Box
+          sx={{
+            width: "70%",
+            height: "calc(100vh - 64px)",
+            marginLeft: "auto",
+            marginRight: "auto",
+          }}
         >
-          Learn React
-        </a>
-      </header>
-    </div>
+          <Paper
+            sx={{
+              height: "100%",
+              padding: 2,
+            }}
+          >
+            <Outlet />
+          </Paper>
+        </Box>
+      </main>
+    </ThemeProvider>
   );
-}
+};
 
 export default App;
