@@ -22,9 +22,16 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 const AppMenu = () => {
+  let page = 0;
+  if (window.location.pathname === "/actions") {
+    page = 2;
+  } else if (window.location.pathname === "/datasources") {
+    page = 1;
+  }
+
   const navigate = useNavigate();
 
-  const [selectedMenu, setSelectedMenu] = useState<number>(0);
+  const [selectedMenu, setSelectedMenu] = useState<number>(page);
 
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const loginOpen = Boolean(anchorEl);
