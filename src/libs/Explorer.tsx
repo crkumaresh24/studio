@@ -187,7 +187,7 @@ const Explorer = (props: ExplorerProps) => {
                       />
                     </ListItemIcon>
                   )}
-                  <ListItemText primary={<Typography>{r.title}</Typography>} />
+                  <ListItemText primary={<Typography variant="body1">{r.title}</Typography>} />
                 </ListItemButton>
               </ListItem>
             );

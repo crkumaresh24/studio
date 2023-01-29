@@ -1,4 +1,4 @@
-import { AccountTree, AddCircle } from "@mui/icons-material";
+import { AddCircle } from "@mui/icons-material";
 import { Box, Button, Paper, Stack } from "@mui/material";
 import { useEffect, useState } from "react";
 import Explorer, { Row, Action } from "../../libs/Explorer";
@@ -18,7 +18,7 @@ const ActionsExplorer = () => {
   }, []);
 
   return (
-    <Stack sx={{ maxWidth: "60%", margin: "auto" }}>
+    <Stack margin={"auto"} sx={{ maxWidth: "60%" }}>
       <Paper sx={{ minHeight: "calc(100vh - 64px)", padding: 3 }}>
         {page === "create" && (
           <CreateAction

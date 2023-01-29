@@ -66,11 +66,11 @@ const SettingsExplorer = () => {
     <Stack sx={{ maxWidth: "60%", margin: "auto" }}>
       <Paper sx={{ minHeight: "calc(100vh - 64px)", padding: 3 }}>
         <Stack gap={2}>
-          <Typography>{"Settings"}</Typography>
+          <Typography variant="overline">Settings</Typography>
           <Box>
             <Box>
               <Stack gap={1} alignItems={"center"} direction={"row"}>
-                <Typography>{"Build Paths"}</Typography>
+                <Typography variant="subtitle1">Build Paths</Typography>
                 <IconButton onClick={() => setShowAddBuildPath(true)}>
                   <Add />
                 </IconButton>
@@ -110,6 +110,7 @@ const SettingsExplorer = () => {
                       disablePadding
                       secondaryAction={
                         <IconButton
+                        size="small"
                           onClick={() => {
                             save({
                               ...settings,
@@ -124,7 +125,9 @@ const SettingsExplorer = () => {
                       }
                     >
                       <ListItemButton>
-                        <ListItemText primary={<Typography>{b}</Typography>} />
+                        <ListItemText
+                          primary={<Typography variant="body2">{b}</Typography>}
+                        />
                       </ListItemButton>
                     </ListItem>
                   );
@@ -134,7 +137,7 @@ const SettingsExplorer = () => {
 
             <Box>
               <Stack gap={1} alignItems={"center"} direction={"row"}>
-                <Typography>{"APIs"}</Typography>
+                <Typography variant="subtitle1">API</Typography>
                 <IconButton onClick={() => setShowAddAPI(true)}>
                   <Add />
                 </IconButton>
@@ -192,6 +195,7 @@ const SettingsExplorer = () => {
                       disablePadding
                       secondaryAction={
                         <IconButton
+                          size="small"
                           onClick={() => {
                             save({
                               ...settings,
@@ -208,7 +212,9 @@ const SettingsExplorer = () => {
                       <ListItemButton>
                         <ListItemText
                           primary={
-                            <Typography>{b.apiId + "," + b.apiURL}</Typography>
+                            <Typography variant="body2">
+                              {b.apiId + " - " + b.apiURL}
+                            </Typography>
                           }
                         />
                       </ListItemButton>
