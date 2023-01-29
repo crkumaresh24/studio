@@ -1,5 +1,5 @@
 import { TreeItem, TreeView } from "@mui/lab";
-import { Box, IconButton, TextField, Typography } from "@mui/material";
+import { Box, IconButton, Stack, TextField } from "@mui/material";
 import { useState } from "react";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
@@ -14,17 +14,17 @@ export interface TreeNode {
   children?: TreeNode[];
 }
 
-interface ValueMapperProps {
-  store: TreeNode;
-  setStore: (store: TreeNode) => void;
+interface PayloadMapperProps {
+  tree: TreeNode;
+  setTree: (tree: TreeNode) => void;
+  onlyTree?: boolean;
   mappedFields: Record<string, DATA>;
   setMappedFields: (mappedFields: Record<string, DATA>) => void;
   levels?: number;
-  title?: string;
   onlyLeafSelection?: boolean;
 }
 
-const ValueMapper = (props: ValueMapperProps) => {
+const PayloadMapper = (props: PayloadMapperProps) => {
   const [selected, setSelected] = useState<string>();
   const [expanded, setExpanded] = useState<string[]>(["0"]);
   const [newKey, setNewKey] = useState<string>("");
@@ -41,31 +41,31 @@ const ValueMapper = (props: ValueMapperProps) => {
       },
     ];
     setExpanded([...expanded, selectedNode.id]);
-    props.setStore({
-      ...props.store,
+    props.setTree({
+      ...props.tree,
     });
-  };
-
-  const setNodeName = (e: React.MouseEvent, selectedNode: TreeNode) => {
-    e.stopPropagation();
-    selectedNode.name = newKey;
-    setExpanded([...expanded, selectedNode.id]);
-    props.setStore({
-      ...props.store,
-    });
-    setNewKey("");
   };
 
   const handleTreeRemove = (e: React.MouseEvent, selectedNode: TreeNode) => {
     e.stopPropagation();
     setSelected(undefined);
     setNewKey("");
-    if (props.store.children) {
-      props.setStore({
-        ...props.store,
-        children: findAndRemoveNode(props.store.children, selectedNode),
+    if (props.tree.children) {
+      props.setTree({
+        ...props.tree,
+        children: findAndRemoveNode(props.tree.children, selectedNode),
       });
     }
+  };
+
+  const setNodeName = (e: React.MouseEvent, selectedNode: TreeNode) => {
+    e.stopPropagation();
+    selectedNode.name = newKey;
+    setExpanded([...expanded, selectedNode.id]);
+    props.setTree({
+      ...props.tree,
+    });
+    setNewKey("");
   };
 
   const findAndRemoveNode = (
@@ -138,8 +138,9 @@ const ValueMapper = (props: ValueMapperProps) => {
               )}
             </>
           ) : (
-            <Box gap={1} sx={{ display: "flex" }}>
+            <Stack margin={1} gap={1} direction={"row"}>
               <TextField
+                size="small"
                 autoFocus
                 value={newKey}
                 onChange={(e) => {
@@ -162,7 +163,7 @@ const ValueMapper = (props: ValueMapperProps) => {
               >
                 <DeleteIcon fontSize="small" />
               </IconButton>
-            </Box>
+            </Stack>
           )}
         </Box>
       }
@@ -175,9 +176,6 @@ const ValueMapper = (props: ValueMapperProps) => {
 
   return (
     <Box gap={2} sx={{ display: "flex", flexDirection: "column", flex: 1 }}>
-      <Typography variant="subtitle1">
-        {props.title || "Value Mapper"}
-      </Typography>
       <Box
         gap={2}
         sx={{
@@ -185,7 +183,7 @@ const ValueMapper = (props: ValueMapperProps) => {
           paddingTop: 2,
           flex: 1,
           border: "1px solid rgb(133, 133, 133)",
-          minHeight: 500,
+          minHeight: 400,
         }}
       >
         <TreeView
@@ -193,6 +191,7 @@ const ValueMapper = (props: ValueMapperProps) => {
           onNodeToggle={(e, expanded) => setExpanded(expanded)}
           selected={selected}
           onNodeSelect={(e: React.SyntheticEvent, n: string) => {
+            console.log(n);
             setSelected(n);
           }}
           style={{ height: "100%" }}
@@ -202,9 +201,9 @@ const ValueMapper = (props: ValueMapperProps) => {
           defaultExpandIcon={<ChevronRightIcon />}
           sx={{ height: 110, flexGrow: 1, maxWidth: 500, overflowY: "auto" }}
         >
-          {renderTree(props.store, 0)}
+          {renderTree(props.tree, 0)}
         </TreeView>
-        {selected && selected !== "0" && (
+        {!props.onlyTree && selected && selected !== "0" && !newKey && (
           <Box sx={{ display: "flex", marginLeft: 8 }}>
             <ValueAssigner
               data={
@@ -225,4 +224,4 @@ const ValueMapper = (props: ValueMapperProps) => {
   );
 };
 
-export default ValueMapper;
+export default PayloadMapper;

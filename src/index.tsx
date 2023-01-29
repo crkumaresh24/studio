@@ -4,12 +4,11 @@ import "./index.css";
 import App from "./App";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import reportWebVitals from "./reportWebVitals";
-import CreateComponent from "./routes/components/CreateComponent";
-import DataSourcesHome from "./routes/datasources/DatasourcesHome";
-import ActionsHome from "./routes/actions/ActionsHome";
-import Explorer from "./libs/Explorer";
-import { title } from "process";
+import ActionsExplorer from "./routes/actions/ActionsExplorer";
 import ComponentsExplorer from "./routes/components/ComponentsExplorer";
+import DesignerHome from "./routes/designer/DesignerHome";
+import DatasourceExplorerHome from "./routes/datasources/DatasourceExplorerHome";
+import SettingsExplorer from "./routes/settings/SettingsExplorer";
 
 const router = createBrowserRouter([
   {
@@ -17,16 +16,24 @@ const router = createBrowserRouter([
     element: <App />,
     children: [
       {
-        path: "/components",
+        path: "/",
         element: <ComponentsExplorer />,
       },
       {
+        path: "/settings",
+        element: <SettingsExplorer />,
+      },
+      {
         path: "/datasources",
-        element: <DataSourcesHome />,
+        element: <DatasourceExplorerHome />,
       },
       {
         path: "/actions",
-        element: <ActionsHome />,
+        element: <ActionsExplorer />,
+      },
+      {
+        path: "/designer",
+        element: <DesignerHome />,
       },
     ],
   },

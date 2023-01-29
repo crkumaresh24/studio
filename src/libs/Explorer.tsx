@@ -5,7 +5,6 @@ import {
   ListItemButton,
   ListItemIcon,
   ListItemText,
-  Divider,
   Checkbox,
   IconButton,
   MenuItem,
@@ -13,19 +12,19 @@ import {
   Menu,
   MenuProps,
   styled,
+  Typography,
 } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
-import ArchiveIcon from "@mui/icons-material/Archive";
 import FileCopyIcon from "@mui/icons-material/FileCopy";
-import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import React, { useState } from "react";
-import { DeleteOutline } from "@mui/icons-material";
+import { DeleteOutline, DesignServices } from "@mui/icons-material";
 
 const iconsRegistry: Record<string, React.ReactElement> = {
   edit: <EditIcon />,
   copy: <FileCopyIcon />,
   delete: <DeleteOutline />,
+  design: <DesignServices />,
 };
 
 const StyledMenu = styled((props: MenuProps) => (
@@ -141,7 +140,7 @@ const Explorer = (props: ExplorerProps) => {
   };
 
   return (
-    <Box sx={{ width: "100%" }}>
+    <Box sx={{ width: "100%", paddingTop: 1 }}>
       <nav aria-label="main mailbox folders">
         <List dense>
           {props.rows.map((r) => {
@@ -188,7 +187,7 @@ const Explorer = (props: ExplorerProps) => {
                       />
                     </ListItemIcon>
                   )}
-                  <ListItemText primary={r.title} />
+                  <ListItemText primary={<Typography>{r.title}</Typography>} />
                 </ListItemButton>
               </ListItem>
             );

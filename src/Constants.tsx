@@ -1,7 +1,62 @@
 import { DATA } from "./libs/ValueAssigner";
-import { TreeNode } from "./libs/ValueMapper";
+import { TreeNode } from "./libs/PayloadMapper";
 
 export const WEB_FS_URL = "http://localhost:9099";
+
+export enum DATA_SOURCE_TYPE {
+  OPENQUERY,
+  OPENAPI,
+  HTTP,
+}
+
+export const inHandleColor = "black";
+export const out0HandleColor = "black";
+export const out1HandleColor = "black";
+export const handleSize = 10;
+export const handleSideGap = 24;
+export const boxHeight = 48;
+export const boxWidth = 180;
+
+export const rootTree: TreeNode = {
+  id: "0",
+  name: "$",
+  children: [],
+};
+
+const isLeaf = (node: TreeNode) => {
+  return !node.children || node.children.length < 1;
+};
+
+export const mergeDefaultValues = (
+  tree: TreeNode,
+  values: Record<string, DATA>,
+  json: any,
+  keys?: Record<string, string>,
+  parent: string = ""
+) => {
+  if (tree) {
+    if (isLeaf(tree)) {
+      if (keys) {
+        keys[tree.id] = parent + "." + tree.name;
+      }
+      stringToObj(
+        tree.id,
+        values[tree.id] || { type: "string", value: "" },
+        json
+      );
+    } else {
+      (tree.children || []).forEach((c) => {
+        mergeDefaultValues(
+          c,
+          values,
+          json,
+          keys,
+          parent ? parent + "." + tree.name : tree.name
+        );
+      });
+    }
+  }
+};
 
 export const stringToObj = (key: string, value: any, obj: any) => {
   const parts = key.split(".");
@@ -17,8 +72,18 @@ export const stringToObj = (key: string, value: any, obj: any) => {
   return obj;
 };
 
-const isLeaf = (node: TreeNode) => {
-  return !node.children || node.children.length < 1;
+export const oneLevelTreeToJSON = (
+  tree: TreeNode,
+  defaultValues: Record<string, DATA>
+) => {
+  let json = {};
+  (tree.children || []).forEach((c) => {
+    json = {
+      ...json,
+      [c.name || c.id]: defaultValues[c.id],
+    };
+  });
+  return json;
 };
 
 export const treeToJSON = (

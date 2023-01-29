@@ -1,0 +1,368 @@
+{
+  "general": [
+    {
+      "type": "Out1",
+      "shortName": "S",
+      "data": { "label": "S", "actionType": "start" }
+    },
+    {
+      "type": "In1",
+      "shortName": "Console",
+      "data": {
+        "label": "ConsolePrint",
+        "actionType": "consolePrint",
+        "disableSelect": true
+      }
+    },
+    {
+      "type": "In1",
+      "shortName": "Res",
+      "data": {
+        "label": "Res",
+        "actionType": "runResp",
+        "disableSelect": true
+      }
+    },
+    {
+      "type": "In1",
+      "shortName": "Action",
+      "data": { "label": "Action", "actionType": "action" }
+    },
+    {
+      "type": "In1",
+      "shortName": "CallBack",
+      "data": { "label": "{}", "actionType": "callBack" }
+    }
+  ],
+  "db": [
+    {
+      "type": "In1Out0Out1",
+      "shortName": "Get",
+      "data": {
+        "label": "DB Get",
+        "attributes": [
+          {
+            "label": "Component Selector",
+            "type": "store"
+          }
+        ],
+        "actionType": "dbget"
+      }
+    },
+    {
+      "type": "In1Out0Out1",
+      "shortName": "Set",
+
+      "data": {
+        "attributes": [
+          {
+            "label": "Component Selector",
+            "type": "store"
+          }
+        ],
+        "label": "DB Set",
+        "actionType": "dbset"
+      }
+    },
+    {
+      "type": "In1Out0Out1TwoSides",
+      "shortName": "Copy",
+      "data": {
+        "label": "-->",
+        "actionType": "dbcopy",
+        "side1Types": ["1", "2", "3", "4"],
+        "side2Types": ["1", "2", "3", "4"]
+      }
+    }
+  ],
+  "comparators": [
+    {
+      "type": "In1Out0Out1TwoSides",
+      "shortName": "==",
+      "data": {
+        "label": "==",
+        "actionType": "comequal"
+      }
+    },
+    {
+      "type": "In1Out0Out1TwoSides",
+      "shortName": "<",
+      "data": {
+        "label": "<",
+        "actionType": "comlesser"
+      }
+    },
+    {
+      "type": "In1Out0Out1TwoSides",
+      "shortName": "<=",
+      "data": {
+        "label": "<=",
+        "actionType": "comlesser"
+      }
+    },
+    {
+      "type": "In1Out0Out1TwoSides",
+      "shortName": ">",
+      "data": {
+        "label": ">",
+        "actionType": "comgrater"
+      }
+    },
+    {
+      "type": "In1Out0Out1TwoSides",
+      "shortName": ">=",
+      "data": {
+        "label": ">=",
+        "actionType": "comgrater"
+      }
+    }
+  ],
+  "web": [
+    {
+      "type": "In1Out0Out1Out2",
+      "shortName": "HTTP",
+      "data": { "label": "HTTP", "actionType": "http" }
+    }
+  ],
+  "json": [
+    {
+      "type": "In1Out0Out1",
+      "shortName": "Transf",
+      "data": {
+        "label": "Transform",
+        "attributes": [
+          {
+            "label": "Expression",
+            "type": "string",
+            "rows": 10
+          }
+        ],
+        "actionType": "transform"
+      }
+    },
+    {
+      "type": "OneInOneOut",
+      "shortName": "Look",
+      "data": { "label": "LookUp", "actionType": "lookup" }
+    },
+    {
+      "type": "In1Out0Out1",
+      "shortName": "StrToJSON",
+      "data": {
+        "label": "StrToJSON",
+        "actionType": "strToJson",
+        "disableSelect": true
+      }
+    }
+  ],
+
+  "string": [
+    {
+      "type": "In1Out0Out1",
+      "shortName": "Length",
+      "data": {
+        "label": "Length",
+        "actionType": "lengthStr",
+        "disableSelect": true
+      }
+    },
+
+    {
+      "type": "In1Out0Out1",
+      "shortName": "Equals",
+      "data": { "label": "Equals", "actionType": "equals" }
+    },
+    {
+      "type": "In1Out0Out1",
+      "shortName": "Low Case",
+      "data": {
+        "label": "Low Case",
+        "actionType": "lowCaseStr",
+        "disableSelect": true
+      }
+    },
+    {
+      "type": "In1Out0Out1",
+      "shortName": "Up Case",
+      "data": {
+        "label": "Up Case",
+        "actionType": "upCaseStr",
+        "disableSelect": true
+      }
+    },
+    {
+      "type": "In1Out0Out1",
+      "shortName": "Is Empty",
+      "data": { "label": "Is Empty", "actionType": "isEmpty" }
+    },
+    {
+      "type": "In1Out0Out1",
+      "shortName": "Sub String",
+      "data": { "label": "Sub String", "actionType": "subStr" }
+    },
+    {
+      "type": "In1Out0Out1",
+      "shortName": "Left Trim",
+      "data": {
+        "label": "Left Trim",
+        "actionType": "leftTrimStr",
+        "disableSelect": true
+      }
+    },
+    {
+      "type": "In1Out0Out1",
+      "shortName": "Trim",
+      "data": {
+        "label": "Trim",
+        "actionType": "trimStr",
+        "disableSelect": true
+      }
+    },
+    {
+      "type": "In1Out0Out1",
+      "shortName": "Right Trim",
+      "data": {
+        "label": "Right Trim",
+        "actionType": "rightTrimStr",
+        "disableSelect": true
+      }
+    },
+    {
+      "type": "In1Out0Out1",
+      "shortName": "Left Pad",
+      "data": { "label": "Left Pad", "actionType": "leftPadStr" }
+    },
+    {
+      "type": "In1Out0Out1",
+      "shortName": "Right Pad",
+      "data": { "label": "Right Pad", "actionType": "rightPadStr" }
+    },
+    {
+      "type": "In1Out0Out1",
+      "shortName": "Contains",
+      "data": { "label": "Contains", "actionType": "contains" }
+    },
+    {
+      "type": "In1Out0Out1",
+      "shortName": "Match",
+      "data": { "label": "Match", "actionType": "match" }
+    },
+    {
+      "type": "In1Out0Out1",
+      "shortName": "Split",
+      "data": { "label": "Split", "actionType": "split" }
+    }
+  ],
+  "string_1D": [
+    {
+      "type": "In1Out0Out1OneSide",
+      "shortName": "Concat",
+      "data": { "label": "Concat", "actionType": "concat" }
+    }
+  ],
+  "string_2D": [
+    {
+      "type": "In1Out0Out1TwoSides",
+      "shortName": "Concat",
+      "data": { "label": "Concat", "actionType": "concat" }
+    }
+  ],
+  "number_1D": [
+    {
+      "type": "In1Out0Out1OneSide",
+      "shortName": "+",
+      "data": { "label": "+", "actionType": "addNum" }
+    },
+    {
+      "type": "In1Out0Out1OneSide",
+      "shortName": "-",
+      "data": { "label": "-", "actionType": "subNum" }
+    },
+    {
+      "type": "In1Out0Out1OneSide",
+      "shortName": "*",
+      "data": { "label": "*", "actionType": "mulNum" }
+    },
+    {
+      "type": "In1Out0Out1OneSide",
+      "shortName": "/",
+      "data": { "label": "/", "actionType": "divNum" }
+    },
+    {
+      "type": "In1Out0Out1OneSide",
+      "shortName": "%",
+      "data": { "label": "%", "actionType": "modNum" }
+    }
+  ],
+  "number_2D": [
+    {
+      "type": "In1Out0Out1TwoSides",
+      "shortName": "+",
+      "data": { "label": "+", "actionType": "addNum" }
+    },
+    {
+      "type": "In1Out0Out1TwoSides",
+      "shortName": "-",
+      "data": { "label": "-", "actionType": "subNum" }
+    },
+    {
+      "type": "In1Out0Out1TwoSides",
+      "shortName": "*",
+      "data": { "label": "*", "actionType": "mulNum" }
+    },
+    {
+      "type": "In1Out0Out1TwoSides",
+      "shortName": "/",
+      "data": { "label": "/", "actionType": "divNum" }
+    },
+    {
+      "type": "In1Out0Out1TwoSides",
+      "shortName": "%",
+      "data": { "label": "%", "actionType": "modNum" }
+    }
+  ],
+  "list": [
+    {
+      "type": "In1Out0Out1",
+      "shortName": "Size",
+      "data": { "label": "Size", "actionType": "sizeLst" }
+    },
+    {
+      "type": "In1Out0Out1",
+      "shortName": "Sort",
+      "data": { "label": "Sort", "actionType": "sortLst" }
+    },
+    {
+      "type": "In1Out0Out1",
+      "shortName": "Reverse",
+      "data": { "label": "Reverse", "actionType": "reverseLst" }
+    },
+    {
+      "type": "In1Out0Out1",
+      "shortName": "Distinct",
+      "data": { "label": "Distinct", "actionType": "distinctLst" }
+    }
+  ],
+  "json_list": [
+    {
+      "type": "Join",
+      "shortName": "Join",
+      "data": { "label": "Join", "actionType": "join" }
+    },
+    {
+      "type": "SortBy",
+      "shortName": "SortBy",
+      "data": { "label": "SortBy", "actionType": "sortBy" }
+    },
+    {
+      "type": "GroupBy",
+      "shortName": "GroupBy",
+      "data": { "label": "GroupBy", "actionType": "groupBy" }
+    },
+    {
+      "type": "DistinctBy",
+      "shortName": "DistinctBy",
+      "data": { "label": "DistinctBy", "actionType": "distinctBy" }
+    }
+  ]
+}

@@ -7,7 +7,7 @@ import {
 } from "@mui/material";
 import React from "react";
 
-type DATA_TYPE = "string" | "number" | "boolean" | "json" | "store" | "context";
+export type DATA_TYPE = "string" | "number" | "boolean" | "json" | "store" | "context";
 
 export interface DATA {
   type: DATA_TYPE;
