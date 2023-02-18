@@ -5,22 +5,35 @@ import {
   RadioGroup,
   TextField,
 } from "@mui/material";
-import React from "react";
+import React, { useEffect } from "react";
+import JsonEditor from "./JsonEditor";
+import StoreSelector from "./StoreSelector";
 
-export type DATA_TYPE = "string" | "number" | "boolean" | "json" | "store" | "context";
+export type DATA_TYPE =
+  | "string"
+  | "number"
+  | "boolean"
+  | "json"
+  | "store"
+  | "context"
+  | "action"
+  | "http"
+  | "openapi"
+  | "openquery";
 
-export interface DATA {
+export interface DATA_VALUE {
   type: DATA_TYPE;
   value: any | undefined;
 }
 
 interface ValueAssignerProps {
-  data: DATA;
-  onDataChange: (data: DATA) => void;
+  data: DATA_VALUE;
+  onDataChange: (data: DATA_VALUE) => void;
   requiredTypes: DATA_TYPE[];
 }
 
 const ValueAssigner = (props: ValueAssignerProps) => {
+  let changedContent: any | undefined;
   const handleTypeChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const type = (event.target as HTMLInputElement).value as DATA_TYPE;
     type === "boolean"
@@ -40,6 +53,31 @@ const ValueAssigner = (props: ValueAssignerProps) => {
 
   const { type } = props.data;
 
+  useEffect(() => {
+    return () => {
+      if (type === "json" && changedContent) {
+        props.onDataChange({
+          ...props.data,
+          value: changedContent,
+        });
+      }
+    };
+  }, []);
+
+  const setJson = () => {
+    if (type === "json" && changedContent) {
+      try {
+        console.log(changedContent);
+        props.onDataChange({
+          ...props.data,
+          value: changedContent,
+        });
+      } catch (e) {
+        console.log(e);
+      }
+    }
+  };
+
   return (
     <Box gap={3} sx={{ display: "flex", flexDirection: "column" }}>
       <RadioGroup
@@ -49,6 +87,12 @@ const ValueAssigner = (props: ValueAssignerProps) => {
         value={type}
         onChange={handleTypeChange}
       >
+        {props.requiredTypes.includes("json") && (
+          <FormControlLabel value="json" control={<Radio />} label="JSON" />
+        )}
+        {props.requiredTypes.includes("store") && (
+          <FormControlLabel value="store" control={<Radio />} label="Store" />
+        )}
         {props.requiredTypes.includes("string") && (
           <FormControlLabel value="string" control={<Radio />} label="String" />
         )}
@@ -62,17 +106,11 @@ const ValueAssigner = (props: ValueAssignerProps) => {
             label="Boolean"
           />
         )}
-        {props.requiredTypes.includes("json") && (
-          <FormControlLabel value="json" control={<Radio />} label="String" />
-        )}
-        {props.requiredTypes.includes("store") && (
-          <FormControlLabel value="store" control={<Radio />} label="String" />
-        )}
         {props.requiredTypes.includes("context") && (
           <FormControlLabel
             value="context"
             control={<Radio />}
-            label="String"
+            label="Context"
           />
         )}
       </RadioGroup>
@@ -80,7 +118,7 @@ const ValueAssigner = (props: ValueAssignerProps) => {
         <TextField
           value={props.data.value}
           onChange={handleValueChange}
-          label="string"
+          label="string value"
           variant="outlined"
         />
       )}
@@ -88,8 +126,8 @@ const ValueAssigner = (props: ValueAssignerProps) => {
         <TextField
           value={props.data.value}
           onChange={handleValueChange}
-          type={"number"}
-          label="number"
+          type="number"
+          label="number value"
           variant="outlined"
         />
       )}
@@ -104,6 +142,49 @@ const ValueAssigner = (props: ValueAssignerProps) => {
           <FormControlLabel value="true" control={<Radio />} label="True" />
           <FormControlLabel value="false" control={<Radio />} label="False" />
         </RadioGroup>
+      )}
+      {type === "json" && (
+        <div onBlur={setJson} className="jse-theme-dark">
+          <JsonEditor
+            className={"json-editor"}
+            mode={"text"}
+            content={{
+              json: props.data.value || {},
+            }}
+            readOnly={false}
+            onChange={(changed: any) => {
+              try {
+                changedContent = JSON.parse(changed.text);
+              } catch (e) {
+                changedContent = undefined;
+              }
+            }}
+          />
+        </div>
+      )}
+      {type === "store" && (
+        <StoreSelector
+          name={(props.data.value || {}).name || ""}
+          onNameChange={(name) => {
+            props.onDataChange({
+              ...props.data,
+              value: {
+                ...(props.data.value || {}),
+                name,
+              },
+            });
+          }}
+          path={(props.data.value || {}).path || ""}
+          onPathChange={(path) => {
+            props.onDataChange({
+              ...props.data,
+              value: {
+                ...(props.data.value || {}),
+                path,
+              },
+            });
+          }}
+        />
       )}
     </Box>
   );

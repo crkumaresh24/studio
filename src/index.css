@@ -26,3 +26,15 @@ code {
 #root {
   height: 100%;
 }
+
+.json-editor {
+  height: 400px;
+  width: 500px;
+}
+
+.json-output {
+  height: 500px;
+  width: 100%;
+  min-height: 500px;
+  max-height: "70vh";
+}

@@ -1,7 +1,8 @@
-import { AddCircle } from "@mui/icons-material";
-import { Box, Button } from "@mui/material";
+import { AddCircle, Delete } from "@mui/icons-material";
+import { Box, Button, Snackbar, Stack, Typography } from "@mui/material";
+import MuiAlert from "@mui/material/Alert";
 import { useEffect, useState } from "react";
-import { DATA_SOURCE_TYPE, mergeDefaultValues } from "../../Constants";
+import { DATA_SOURCE_TYPE, SnackMessage } from "../../Constants";
 import Explorer, { Action, Row } from "../../libs/Explorer";
 import {
   listDatasources,
@@ -22,15 +23,27 @@ interface DatasourceExplorerProps {
 
 const DatasourceExplorer = (props: DatasourceExplorerProps) => {
   const [page, setPage] = useState<"list" | "create" | "edit">("list");
+  const [snackMessage, setSnackMessage] = useState<SnackMessage | undefined>();
   const [datasource, setDatasource] = useState<DataSource>({
     type: props.type,
     props: {},
   });
   const [list, setList] = useState<string[]>([]);
+  const [selected, setSelected] = useState<string[]>([]);
   const [clickedRow, setClickedRow] = useState<Row>();
 
   const refresh = () => {
     listDatasources(props.type, setList, (e) => {});
+  };
+
+  const handleSnackClose = (
+    e: React.SyntheticEvent | Event,
+    reason?: string
+  ) => {
+    if (reason === "clickaway") {
+      return;
+    }
+    setSnackMessage(undefined);
   };
 
   useEffect(() => {
@@ -38,12 +51,31 @@ const DatasourceExplorer = (props: DatasourceExplorerProps) => {
   }, []);
 
   const onSave = (name: string, d: DataSource) => {
-    const json = {};
-    const keys = {};
-    mergeDefaultValues(d.props.bodyTree, d.props.bodyDefaultValues, json, keys);
-    console.log(json);
-    console.log(keys);
-    saveDatasource(d, props.type, name, refresh, () => {});
+    saveDatasource(
+      {
+        ...d,
+        props: {
+          ...d.props,
+          settings: undefined,
+          mode: undefined,
+        },
+      },
+      props.type,
+      name,
+      () => {
+        setSnackMessage({
+          message: "changes saved",
+          severity: "success",
+        });
+        refresh();
+      },
+      (e) => {
+        setSnackMessage({
+          message: e.message,
+          severity: "error",
+        });
+      }
+    );
   };
 
   const getType = () => {
@@ -83,8 +115,8 @@ const DatasourceExplorer = (props: DatasourceExplorerProps) => {
         />
       )}
       {page === "list" && (
-        <Box gap={2} sx={{ display: "flex", flexDirection: "column" }}>
-          <Box sx={{ display: "flex" }}>
+        <Stack gap={3} justifyContent="center">
+          <Stack gap={2} direction={"row"}>
             <Button
               onClick={(e) => {
                 setDatasource({
@@ -98,8 +130,24 @@ const DatasourceExplorer = (props: DatasourceExplorerProps) => {
             >
               {"Create " + getType() + " Datasource"}
             </Button>
-          </Box>
+            <Button
+              disabled={selected.length === 0}
+              onClick={(e) => {}}
+              startIcon={<Delete />}
+              variant="contained"
+            >
+              {"Delete Selected"}
+            </Button>
+            <Typography sx={{ marginLeft: "auto" }}>
+              {selected.length + " selected"}
+            </Typography>
+          </Stack>
           <Explorer
+            selectable
+            showSearch
+            title="Services"
+            selected={selected}
+            onSelectionChange={setSelected}
             onClick={(r) => {
               readDatasource(
                 props.type,
@@ -125,7 +173,19 @@ const DatasourceExplorer = (props: DatasourceExplorerProps) => {
               title: c,
             }))}
           />
-        </Box>
+        </Stack>
+      )}
+      {snackMessage && (
+        <Snackbar
+          anchorOrigin={{ vertical: "top", horizontal: "center" }}
+          open={snackMessage.message !== undefined}
+          autoHideDuration={3000}
+          onClose={handleSnackClose}
+        >
+          <MuiAlert severity={snackMessage.severity}>
+            {snackMessage.message}
+          </MuiAlert>
+        </Snackbar>
       )}
     </Box>
   );

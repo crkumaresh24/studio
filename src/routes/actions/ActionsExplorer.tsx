@@ -1,12 +1,15 @@
-import { AddCircle } from "@mui/icons-material";
-import { Box, Button, Paper, Stack } from "@mui/material";
+import { AddCircle, Delete } from "@mui/icons-material";
+import { Box, Button, Paper, Stack, Typography } from "@mui/material";
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import Explorer, { Row, Action } from "../../libs/Explorer";
 import { listActions, removeAction, saveAction } from "../../services";
 import CreateAction from "./CreateAction";
 
 const ActionsExplorer = () => {
+  const navigate = useNavigate();
   const [page, setPage] = useState<"list" | "create" | "edit">("list");
+  const [selected, setSelected] = useState<string[]>([]);
   const [list, setList] = useState<string[]>([]);
 
   const refresh = () => {
@@ -30,7 +33,7 @@ const ActionsExplorer = () => {
         )}
         {page === "list" && (
           <Box gap={2} sx={{ display: "flex", flexDirection: "column" }}>
-            <Box sx={{ display: "flex" }}>
+            <Stack gap={2} direction={"row"}>
               <Button
                 onClick={(e) => {
                   setPage("create");
@@ -40,18 +43,35 @@ const ActionsExplorer = () => {
               >
                 Create Action
               </Button>
-            </Box>
+              <Button
+                disabled={selected.length === 0}
+                onClick={(e) => {}}
+                startIcon={<Delete />}
+                variant="contained"
+              >
+                {"Delete Selected"}
+              </Button>
+              <Typography sx={{ marginLeft: "auto" }}>
+                {selected.length + " selected"}
+              </Typography>
+            </Stack>
             <Explorer
+              selectable
+              showSearch
+              title="Actions"
+              selected={selected}
+              onSelectionChange={setSelected}
               secondaryActions={[
-                { id: "design", title: "Design", startIcon: "design" },
                 { id: "delete", title: "Delete", startIcon: "delete" },
               ]}
               onSecondaryAction={(row: Row, action: Action) => {
                 if (action.id === "delete") {
                   removeAction(row.id, refresh, () => {});
-                } else if (action.id === "design") {
-                  window.open("/designer?action=" + row.id, "_blank");
                 }
+              }}
+              onClick={(row: Row) => {
+                navigate("/designer?action=" + row.id);
+                // window.open("/designer?action=" + row.id, "_blank");
               }}
               rows={list.map((c) => ({
                 id: c,

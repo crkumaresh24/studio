@@ -1,10 +1,11 @@
-import { AddCircle } from "@mui/icons-material";
-import { Box, Button, Paper, Stack } from "@mui/material";
+import { AddCircle, Delete } from "@mui/icons-material";
+import { Box, Button, Paper, Snackbar, Stack, Typography } from "@mui/material";
 import { useEffect, useState } from "react";
-import { rootTree } from "../../Constants";
+import { getRootTree, SnackMessage } from "../../Constants";
 import Explorer, { Action, Row } from "../../libs/Explorer";
-import { DATA } from "../../libs/ValueAssigner";
+import { DATA_VALUE } from "../../libs/ValueAssigner";
 import { TreeNode } from "../../libs/PayloadMapper";
+import MuiAlert from "@mui/material/Alert";
 import {
   listComponents,
   readComponent,
@@ -15,17 +16,29 @@ import SaveComponent from "./SaveComponent";
 
 export interface Component {
   tree: TreeNode;
-  defaultValues: Record<string, DATA>;
+  defaultValues: Record<string, DATA_VALUE>;
 }
 
 const ComponentsExplorer = () => {
   const [page, setPage] = useState<"list" | "create" | "edit">("list");
+  const [snackMessage, setSnackMessage] = useState<SnackMessage | undefined>();
   const [component, setComponent] = useState<Component>({
-    tree: rootTree,
+    tree: getRootTree("props"),
     defaultValues: {},
   });
   const [list, setList] = useState<string[]>([]);
+  const [selected, setSelected] = useState<string[]>([]);
   const [clickedRow, setClickedRow] = useState<Row>();
+
+  const handleSnackClose = (
+    e: React.SyntheticEvent | Event,
+    reason?: string
+  ) => {
+    if (reason === "clickaway") {
+      return;
+    }
+    setSnackMessage(undefined);
+  };
 
   const refresh = () => {
     listComponents(setList, (e) => {});
@@ -36,7 +49,23 @@ const ComponentsExplorer = () => {
   }, []);
 
   const onSave = (name: string, c: Component) => {
-    saveComponent(c, name, refresh, () => {});
+    saveComponent(
+      c,
+      name,
+      () => {
+        refresh();
+        setSnackMessage({
+          message: "changes saved",
+          severity: "success",
+        });
+      },
+      (e) => {
+        setSnackMessage({
+          message: e.message,
+          severity: "error",
+        });
+      }
+    );
   };
 
   return (
@@ -44,12 +73,13 @@ const ComponentsExplorer = () => {
       <Paper sx={{ minHeight: "calc(100vh - 64px)", padding: 3 }}>
         {page === "create" && (
           <SaveComponent
+            mode="create"
             name=""
             component={component}
             onSave={onSave}
             onBack={() => {
               setComponent({
-                tree: rootTree,
+                tree: getRootTree("props"),
                 defaultValues: {},
               });
               setPage("list");
@@ -58,12 +88,13 @@ const ComponentsExplorer = () => {
         )}
         {page === "edit" && clickedRow && (
           <SaveComponent
+            mode="edit"
             name={clickedRow.id}
             component={component}
             onSave={onSave}
             onBack={() => {
               setComponent({
-                tree: rootTree,
+                tree: getRootTree("props"),
                 defaultValues: {},
               });
               setPage("list");
@@ -71,8 +102,8 @@ const ComponentsExplorer = () => {
           />
         )}
         {page === "list" && (
-          <Box gap={2} sx={{ display: "flex", flexDirection: "column" }}>
-            <Box sx={{ display: "flex" }}>
+          <Stack gap={2}>
+            <Stack gap={2} direction={"row"}>
               <Button
                 onClick={(e) => {
                   setPage("create");
@@ -80,10 +111,26 @@ const ComponentsExplorer = () => {
                 variant="contained"
                 startIcon={<AddCircle />}
               >
-                Create Container
+                Create Component
               </Button>
-            </Box>
+              <Button
+                disabled={selected.length === 0}
+                onClick={(e) => {}}
+                startIcon={<Delete />}
+                variant="contained"
+              >
+                {"Delete Selected"}
+              </Button>
+              <Typography sx={{ marginLeft: "auto" }}>
+                {selected.length + " selected"}
+              </Typography>
+            </Stack>
             <Explorer
+              selectable
+              showSearch
+              title={"Components"}
+              selected={selected}
+              onSelectionChange={setSelected}
               onClick={(r) => {
                 readComponent(
                   r.id,
@@ -108,9 +155,21 @@ const ComponentsExplorer = () => {
                 title: c,
               }))}
             />
-          </Box>
+          </Stack>
         )}
       </Paper>
+      {snackMessage && (
+        <Snackbar
+          anchorOrigin={{ vertical: "top", horizontal: "center" }}
+          open={snackMessage.message !== undefined}
+          autoHideDuration={3000}
+          onClose={handleSnackClose}
+        >
+          <MuiAlert severity={snackMessage.severity}>
+            {snackMessage.message}
+          </MuiAlert>
+        </Snackbar>
+      )}
     </Stack>
   );
 };

@@ -1,5 +1,4 @@
 import {
-  Box,
   List,
   ListItem,
   ListItemButton,
@@ -13,6 +12,8 @@ import {
   MenuProps,
   styled,
   Typography,
+  Stack,
+  TextField,
 } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import FileCopyIcon from "@mui/icons-material/FileCopy";
@@ -82,6 +83,7 @@ export interface Row {
 }
 
 interface ExplorerProps {
+  title?: string;
   rows: Row[];
   selectable?: boolean;
   selected?: string[];
@@ -89,6 +91,7 @@ interface ExplorerProps {
   secondaryActions?: Action[];
   onSecondaryAction?: (row: Row, action: Action) => void;
   onClick?: (row: Row) => void;
+  showSearch?: boolean;
 }
 
 const Explorer = (props: ExplorerProps) => {
@@ -140,63 +143,96 @@ const Explorer = (props: ExplorerProps) => {
   };
 
   return (
-    <Box sx={{ width: "100%", paddingTop: 1 }}>
-      <nav aria-label="main mailbox folders">
-        <List dense>
-          {props.rows.map((r) => {
-            return (
-              <ListItem
-                key={r.id}
-                disablePadding
-                onClick={() => props.onClick && props.onClick(r)}
-                secondaryAction={
-                  <IconButton
-                    aria-label="more"
-                    id="long-button"
-                    aria-controls={openSecondaryMenu ? "long-menu" : undefined}
-                    aria-expanded={openSecondaryMenu ? "true" : undefined}
-                    aria-haspopup="true"
-                    onClick={(e) => handleSecondaryMenuClick(e, r)}
-                  >
-                    <MoreVertIcon />
-                  </IconButton>
+    <Stack gap={2} justifyContent="center">
+      {props.showSearch && (
+        <Stack gap={5} direction={"row"} alignItems="center">
+          <Checkbox
+            disableRipple
+            checked={
+              props.rows.length > 0 &&
+              props.rows.length === props.selected?.length
+            }
+            onChange={(e, checked) => {
+              if (props.onSelectionChange) {
+                if (checked) {
+                  props.onSelectionChange(props.rows.map((r) => r.id));
+                } else {
+                  props.onSelectionChange([]);
                 }
-              >
-                <ListItemButton>
-                  {props.selectable && (
-                    <ListItemIcon>
-                      <Checkbox
-                        edge="start"
-                        checked={(props.selected || []).includes(r.id)}
-                        onChange={(e, checked) => {
-                          if (props.onSelectionChange) {
-                            if (checked) {
-                              props.onSelectionChange([
-                                ...(props.selected || []),
-                                r.id,
-                              ]);
-                            } else {
-                              props.onSelectionChange(
-                                (props.selected || []).filter((s) => s !== r.id)
-                              );
-                            }
-                          }
-                        }}
-                        tabIndex={-1}
-                        disableRipple
-                      />
-                    </ListItemIcon>
-                  )}
-                  <ListItemText primary={<Typography variant="body1">{r.title}</Typography>} />
-                </ListItemButton>
-              </ListItem>
-            );
-          })}
-        </List>
-      </nav>
+              }
+            }}
+          />
+          <Typography variant="subtitle1" sx={{ margin: "auto" }}>
+            {props.title}
+          </Typography>
+          <TextField size="small" autoComplete="off" placeholder="search" />
+        </Stack>
+      )}
+
+      <List dense>
+        {props.rows.map((r) => {
+          return (
+            <ListItem
+              style={{
+                paddingLeft: 14,
+              }}
+              key={r.id}
+              onClick={() => props.onClick && props.onClick(r)}
+              secondaryAction={
+                <IconButton
+                  aria-label="more"
+                  id="long-button"
+                  aria-controls={openSecondaryMenu ? "long-menu" : undefined}
+                  aria-expanded={openSecondaryMenu ? "true" : undefined}
+                  aria-haspopup="true"
+                  onClick={(e) => handleSecondaryMenuClick(e, r)}
+                >
+                  <MoreVertIcon />
+                </IconButton>
+              }
+            >
+              {props.selectable && (
+                <ListItemIcon>
+                  <Checkbox
+                    sx={{ paddingRight: 1 }}
+                    edge="start"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                    }}
+                    checked={(props.selected || []).includes(r.id)}
+                    onChange={(e, checked) => {
+                      if (props.onSelectionChange) {
+                        if (checked) {
+                          props.onSelectionChange([
+                            ...(props.selected || []),
+                            r.id,
+                          ]);
+                        } else {
+                          props.onSelectionChange(
+                            (props.selected || []).filter((s) => s !== r.id)
+                          );
+                        }
+                      }
+                    }}
+                    tabIndex={-1}
+                  />
+                </ListItemIcon>
+              )}
+              <ListItemButton>
+                <ListItemText
+                  primary={
+                    <Typography variant="subtitle1">{r.title}</Typography>
+                  }
+                />
+              </ListItemButton>
+            </ListItem>
+          );
+        })}
+      </List>
+
       {props.secondaryActions &&
         getSecondaryActionsMenu(props.secondaryActions)}
-    </Box>
+    </Stack>
   );
 };
 

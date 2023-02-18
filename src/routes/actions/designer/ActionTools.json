@@ -26,7 +26,16 @@
     {
       "type": "In1",
       "shortName": "Action",
-      "data": { "label": "Action", "actionType": "action" }
+      "data": {
+        "label": "Action",
+        "actionType": "action",
+        "attributes": [
+          {
+            "label": "Actions Selector",
+            "type": "actions"
+          }
+        ]
+      }
     },
     {
       "type": "In1",
@@ -34,7 +43,7 @@
       "data": { "label": "{}", "actionType": "callBack" }
     }
   ],
-  "db": [
+  "container": [
     {
       "type": "In1Out0Out1",
       "shortName": "Get",
@@ -42,7 +51,6 @@
         "label": "DB Get",
         "attributes": [
           {
-            "label": "Component Selector",
             "type": "store"
           }
         ],
@@ -56,7 +64,6 @@
       "data": {
         "attributes": [
           {
-            "label": "Component Selector",
             "type": "store"
           }
         ],
@@ -68,10 +75,63 @@
       "type": "In1Out0Out1TwoSides",
       "shortName": "Copy",
       "data": {
+        "attributes": [
+          {
+            "label": "Source Selector",
+            "type": "store"
+          },
+          {
+            "label": "Destination Selector",
+            "type": "store"
+          }
+        ],
         "label": "-->",
         "actionType": "dbcopy",
         "side1Types": ["1", "2", "3", "4"],
         "side2Types": ["1", "2", "3", "4"]
+      }
+    }
+  ],
+  "datasources": [
+    {
+      "type": "In1Out0Out1",
+      "shortName": "HTTP",
+      "data": {
+        "label": "HTTP",
+        "attributes": [
+          {
+            "type": "http"
+          }
+        ],
+        "actionType": "http"
+      }
+    },
+    {
+      "type": "In1Out0Out1",
+      "shortName": "OpenQuery",
+      "data": {
+        "label": "OpenQuery",
+        "attributes": [
+          {
+            "label": "OpenQuery",
+            "type": "openquery"
+          }
+        ],
+        "actionType": "openquery"
+      }
+    },
+    {
+      "type": "In1Out0Out1",
+      "shortName": "OpenAPI",
+      "data": {
+        "label": "OpenAPI",
+        "attributes": [
+          {
+            "label": "OpenAPI",
+            "type": "openapi"
+          }
+        ],
+        "actionType": "openapi"
       }
     }
   ],
@@ -115,13 +175,6 @@
         "label": ">=",
         "actionType": "comgrater"
       }
-    }
-  ],
-  "web": [
-    {
-      "type": "In1Out0Out1Out2",
-      "shortName": "HTTP",
-      "data": { "label": "HTTP", "actionType": "http" }
     }
   ],
   "json": [

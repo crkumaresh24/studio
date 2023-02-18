@@ -1,4 +1,11 @@
-import { Box, Button, IconButton, TextField } from "@mui/material";
+import {
+  Box,
+  Button,
+  IconButton,
+  Stack,
+  TextField,
+  Typography,
+} from "@mui/material";
 import SaveIcon from "@mui/icons-material/Save";
 import PayloadMapper from "../../libs/PayloadMapper";
 import { useState } from "react";
@@ -6,6 +13,7 @@ import BackIcon from "@mui/icons-material/ArrowBack";
 import { Component } from "./ComponentsExplorer";
 
 interface SaveComponentProps {
+  mode: "create" | "edit";
   name: string;
   component: Component;
   onSave: (name: string, component: Component) => void;
@@ -15,33 +23,37 @@ interface SaveComponentProps {
 const SaveComponent = (props: SaveComponentProps) => {
   const [name, setName] = useState<string>(props.name);
   const [component, setComponent] = useState<Component>(props.component);
+  const [selectedPath, setSelectedPath] = useState<string>("");
   return (
-    <Box gap={4} sx={{ display: "flex", flexDirection: "column", flex: 1 }}>
-      <Box gap={3} sx={{ display: "flex" }}>
-        <IconButton onClick={(e) => props.onBack()}>
+    <Stack gap={4}>
+      <Stack gap={2} direction="row">
+        <IconButton size="small" onClick={(e) => props.onBack()}>
           <BackIcon />
         </IconButton>
+        <Typography sx={{ margin: "auto" }}>
+          {props.mode === "edit" ? props.name : ""}
+        </Typography>
         <Button
           onClick={(e) => {
-            if (name) {
-              props.onSave(name, component);
-              props.onBack();
-            }
+            props.onSave(name, component);
           }}
           startIcon={<SaveIcon />}
           size="small"
           variant="contained"
         >
-          Save
+          Save Changes
         </Button>
-      </Box>
-      <TextField
-        variant="outlined"
-        label="Name"
-        placeholder="component name"
-        value={name}
-        onChange={(e) => setName(e.target.value)}
-      />
+      </Stack>
+      {props.mode === "create" && (
+        <TextField
+          autoFocus
+          label={"Component Name"}
+          placeholder={"component name"}
+          variant="outlined"
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+        />
+      )}
       <PayloadMapper
         onlyLeafSelection
         tree={component.tree}
@@ -51,6 +63,8 @@ const SaveComponent = (props: SaveComponentProps) => {
             tree,
           })
         }
+        selected={selectedPath}
+        setSelected={setSelectedPath}
         mappedFields={component.defaultValues}
         setMappedFields={(defaultValues) =>
           setComponent({
@@ -59,7 +73,7 @@ const SaveComponent = (props: SaveComponentProps) => {
           })
         }
       />
-    </Box>
+    </Stack>
   );
 };
 

@@ -12,24 +12,24 @@ const DatasourceExplorerHome = () => {
   };
   return (
     <Stack sx={{ maxWidth: "60%", margin: "auto" }}>
-      <Paper sx={{ minHeight: "calc(100vh - 64px)" }}>
+      <Paper sx={{ padding: 1, minHeight: "calc(100vh - 64px)" }}>
         <Tabs
           value={value}
           onChange={handleChange}
           aria-label="basic tabs example"
         >
           <Tab icon={<Language />} iconPosition="start" label="HTTP" />
+          <Tab icon={<Api />} iconPosition="start" label="OpenAPI (Swagger)" />
           <Tab icon={<Dataset />} iconPosition="start" label="Openquery" />
-          <Tab icon={<Api />} iconPosition="start" label="OpenAPI" />
         </Tabs>
 
         <Stack padding={1}>
           {value === 0 && <DatasourceExplorer type={DATA_SOURCE_TYPE.HTTP} />}
           {value === 1 && (
-            <DatasourceExplorer type={DATA_SOURCE_TYPE.OPENQUERY} />
+            <DatasourceExplorer type={DATA_SOURCE_TYPE.OPENAPI} />
           )}
           {value === 2 && (
-            <DatasourceExplorer type={DATA_SOURCE_TYPE.OPENAPI} />
+            <DatasourceExplorer type={DATA_SOURCE_TYPE.OPENQUERY} />
           )}
         </Stack>
       </Paper>

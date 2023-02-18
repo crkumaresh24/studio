@@ -1,6 +1,6 @@
 import { DATA_SOURCE_TYPE, WEB_FS_URL } from "./Constants";
 
-const workspace = "/home/kumaresh/files";
+const workspace = "/workspace";
 
 const saveComponent = (
   content: any,
@@ -205,7 +205,6 @@ const removeAction = (
     .catch(onError);
 };
 
-
 const saveSettings = (
   content: any,
   onSuccess: () => void,
@@ -245,5 +244,5 @@ export {
   readStore,
   saveStore,
   saveSettings,
-  readSettings
+  readSettings,
 };

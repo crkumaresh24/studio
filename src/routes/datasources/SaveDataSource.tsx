@@ -1,12 +1,27 @@
-import { Box, Button, IconButton, TextField, Typography } from "@mui/material";
+import {
+  Box,
+  Button,
+  Drawer,
+  IconButton,
+  Stack,
+  TextField,
+  Typography,
+} from "@mui/material";
 import BackIcon from "@mui/icons-material/ArrowBack";
 import SaveIcon from "@mui/icons-material/Save";
-import OpenQueryDataSource from "./OpenQueryDataSource";
+import OpenQueryDataSource from "./openquery/OpenQueryDataSource";
 import { DataSource } from "./DatasourceExplorer";
-import HTTPDataSource from "./HTTPDataSource";
-import OpenAPIDataSource from "./OpenAPIDataSource";
-import { useState } from "react";
-import { DATA_SOURCE_TYPE } from "../../Constants";
+import HTTPDataSource from "./http/HTTPDataSource";
+import OpenAPIDataSource from "./openapi/OpenAPIDataSource";
+import { useEffect, useState } from "react";
+import { DATA_SOURCE_TYPE, Settings } from "../../Constants";
+import { PlayArrow } from "@mui/icons-material";
+import { executeOpenAPI } from "../../executors/OpenAPIExecutor";
+import { readSettings } from "../../services";
+import openApiFetch from "../../libs/OpenAPIFetch";
+import JsonEditor from "../../libs/JsonEditor";
+import { executeHTTP } from "../../executors/HTTPExecutor";
+import { executeOpenQuery } from "../../executors/OpenQueryExecutor";
 
 interface SaveDatasourceProps {
   mode: "create" | "edit";
@@ -18,13 +33,50 @@ interface SaveDatasourceProps {
 
 const SaveDatasource = (props: SaveDatasourceProps) => {
   const [datasource, setDatasource] = useState<DataSource>(props.datasource);
+  const [settings, setSettings] = useState<Settings | undefined>();
   const [name, setName] = useState<string>(props.name);
+  const [showRes, setShowRes] = useState<boolean>(false);
+  const [output, setOutput] = useState<any>("");
+
+  useEffect(() => {
+    readSettings(setSettings, () => {});
+  }, []);
+
+  const onRunResponse = (response: string) => {
+    let out = response;
+    try {
+      out = JSON.parse(out);
+    } catch (e) {}
+    setOutput(out);
+    setShowRes(true);
+  };
+
+  const onRunError = (
+    statusCode: number,
+    statusText: string,
+    response: string
+  ) => {
+    let out = response;
+    try {
+      out = JSON.parse(out);
+    } catch (e) {}
+    if (out) {
+      setOutput(out);
+    } else {
+      setOutput(statusCode + " - " + statusText);
+    }
+    setShowRes(true);
+  };
+
   return (
-    <Box gap={4} sx={{ display: "flex", flexDirection: "column", flex: 1 }}>
-      <Box gap={3} sx={{ display: "flex", alignItems: "center" }}>
-        <IconButton onClick={(e) => props.onBack()}>
+    <Stack gap={4} direction="column">
+      <Stack gap={2} direction="row" alignItems={"center"}>
+        <IconButton onClick={props.onBack}>
           <BackIcon />
         </IconButton>
+        <Typography sx={{ margin: "auto" }}>
+          {props.mode === "edit" ? props.name : ""}
+        </Typography>
         <Button
           disabled={!name}
           onClick={() => props.onSave(name, datasource)}
@@ -32,14 +84,38 @@ const SaveDatasource = (props: SaveDatasourceProps) => {
           size="small"
           variant="contained"
         >
-          Save
+          Save Changes
         </Button>
-        {props.mode === "edit" && (
-          <Typography sx={{ marginLeft: "auto", marginRight: "auto" }}>
-            {name}
-          </Typography>
-        )}
-      </Box>
+        <Button
+          onClick={() => {
+            if (
+              datasource.type.toString() === DATA_SOURCE_TYPE.OPENAPI.toString()
+            ) {
+              settings &&
+                executeOpenAPI(
+                  datasource,
+                  openApiFetch(settings.apis || []),
+                  onRunResponse,
+                  () => {}
+                );
+            } else if (
+              datasource.type.toString() === DATA_SOURCE_TYPE.HTTP.toString()
+            ) {
+              executeHTTP(datasource, onRunResponse, onRunError);
+            } else if (
+              datasource.type.toString() ===
+              DATA_SOURCE_TYPE.OPENQUERY.toString()
+            ) {
+              executeOpenQuery(datasource, settings, onRunResponse, onRunError);
+            }
+          }}
+          startIcon={<PlayArrow />}
+          size="small"
+          variant="contained"
+        >
+          Run
+        </Button>
+      </Stack>
       {props.mode === "create" && (
         <TextField
           autoFocus
@@ -51,27 +127,55 @@ const SaveDatasource = (props: SaveDatasourceProps) => {
         />
       )}
       {props.datasource.type.toString() ===
-        DATA_SOURCE_TYPE.OPENQUERY.toString() && (
-        <OpenQueryDataSource
-          onChange={(props) => setDatasource({ ...datasource, props })}
-          {...datasource.props}
-        />
-      )}
+        DATA_SOURCE_TYPE.OPENQUERY.toString() &&
+        settings && (
+          <OpenQueryDataSource
+            onChange={(props) => setDatasource({ ...datasource, props })}
+            mode={props.mode}
+            {...datasource.props}
+            settings={settings}
+          />
+        )}
       {props.datasource.type.toString() ===
         DATA_SOURCE_TYPE.HTTP.toString() && (
         <HTTPDataSource
           onChange={(props) => setDatasource({ ...datasource, props })}
+          mode={props.mode}
           {...datasource.props}
         />
       )}
       {props.datasource.type.toString() ===
-        DATA_SOURCE_TYPE.OPENAPI.toString() && (
-        <OpenAPIDataSource
-          onChange={(props) => setDatasource({ ...datasource, props })}
-          {...datasource.props}
-        />
-      )}
-    </Box>
+        DATA_SOURCE_TYPE.OPENAPI.toString() &&
+        settings && (
+          <OpenAPIDataSource
+            onChange={(props) => setDatasource({ ...datasource, props })}
+            {...datasource.props}
+            mode={props.mode}
+            settings={settings}
+          />
+        )}
+
+      <Drawer
+        anchor={"bottom"}
+        open={showRes}
+        onClose={() => {
+          setShowRes(false);
+        }}
+      >
+        <Box padding={2} sx={{ minHeight: 500 }}>
+          <div className="jse-theme-dark">
+            <JsonEditor
+              className={"json-output"}
+              mode={"text"}
+              content={{
+                json: output || {},
+              }}
+              readOnly={true}
+            />
+          </div>
+        </Box>
+      </Drawer>
+    </Stack>
   );
 };
 

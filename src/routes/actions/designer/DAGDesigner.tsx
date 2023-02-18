@@ -1,23 +1,17 @@
 import {
-  Box,
-  Button,
   Divider,
   Drawer,
   IconButton,
   Menu,
   MenuItem,
   Paper,
-  Snackbar,
-  Stack,
   styled,
   Typography,
   useTheme,
 } from "@mui/material";
 import { useCallback, useEffect, useRef, useState } from "react";
-import MuiAlert from "@mui/material/Alert";
+
 import ReactFlow, {
-  useNodesState,
-  useEdgesState,
   addEdge,
   Controls,
   Background,
@@ -30,7 +24,7 @@ import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import NodeProperties from "./NodeProperties";
 import { nodeTypes } from "./DAGNode";
-import { readAction, saveAction } from "../../services";
+import { readAction } from "../../../services";
 
 const DrawerHeader = styled("div")(({ theme }) => ({
   display: "flex",
@@ -42,12 +36,13 @@ const DrawerHeader = styled("div")(({ theme }) => ({
 }));
 
 interface DAGDesignerProps {
-  name: string;
-}
-
-interface SnackMessage {
-  severity: "error" | "warning" | "info" | "success";
-  message: string;
+  actionName: string;
+  nodes: Node[];
+  edges: Edge[];
+  setNodes: any;
+  setEdges: any;
+  onNodesChange: any;
+  onEdgesChange: any;
 }
 
 const DAGDesigner = (props: DAGDesignerProps) => {
@@ -56,21 +51,6 @@ const DAGDesigner = (props: DAGDesignerProps) => {
   const [openProperties, setOpenProperties] = useState(false);
   const [selectedNode, setSelectedNode] = useState<Node>();
   const [reactFlowInstance, setReactFlowInstance] = useState<any | undefined>();
-  const [nodes, setNodes, onNodesChange] = useNodesState([]);
-  const [edges, setEdges, onEdgesChange] = useEdgesState([]);
-  const [openSnackBar, setOpenSnackBar] = useState(false);
-  const [snackMessage, setSnackMessage] = useState<SnackMessage | undefined>();
-
-  const handleClose = (
-    event: React.SyntheticEvent | Event,
-    reason?: string
-  ) => {
-    if (reason === "clickaway") {
-      return;
-    }
-    setOpenSnackBar(false);
-    setSnackMessage(undefined);
-  };
 
   const [contextMenu, setContextMenu] = useState<{
     mouseX: number;
@@ -78,17 +58,18 @@ const DAGDesigner = (props: DAGDesignerProps) => {
   } | null>(null);
 
   const onConnect = useCallback(
-    (params: Edge<any> | Connection) => setEdges((eds) => addEdge(params, eds)),
-    [setEdges]
+    (params: Edge<any> | Connection) =>
+      props.setEdges((eds: Edge[]) => addEdge(params, eds)),
+    [props.setEdges]
   );
 
   const getNodeContext = (n: Node) => {
     const nodeId = n.id;
     return {
       remove: () => {
-        setNodes((nds) => nds.filter((n) => n.id !== nodeId));
-        setEdges((edges) =>
-          edges.filter((e) => e.source !== nodeId && e.target !== nodeId)
+        props.setNodes((nds: Node[]) => nds.filter((n) => n.id !== nodeId));
+        props.setEdges((edges: Edge[]) =>
+          props.edges.filter((e) => e.source !== nodeId && e.target !== nodeId)
         );
       },
     };
@@ -114,41 +95,18 @@ const DAGDesigner = (props: DAGDesignerProps) => {
 
   const refresh = () => {
     readAction(
-      props.name,
+      props.actionName,
       (action) => {
-        setNodes(action.nodes || []);
-        setEdges(action.edges || []);
+        props.setNodes(action.nodes || []);
+        props.setEdges(action.edges || []);
       },
       () => {}
     );
   };
 
-  const save = () => {
-    if (props.name) {
-      saveAction(
-        { nodes, edges },
-        props.name,
-        () => {
-          setSnackMessage({
-            severity: "success",
-            message: "saved successfully",
-          });
-          setOpenSnackBar(true);
-        },
-        () => {
-          setSnackMessage({
-            severity: "error",
-            message: "error while saving",
-          });
-          setOpenSnackBar(true);
-        }
-      );
-    }
-  };
-
   useEffect(() => {
     refresh();
-  }, [props.name]);
+  }, [props.actionName]);
 
   return (
     <Paper
@@ -156,7 +114,7 @@ const DAGDesigner = (props: DAGDesignerProps) => {
       sx={{ width: "100%", margin: 1, overflow: "auto" }}
     >
       <ReactFlow
-        nodes={nodes.map((n) => {
+        nodes={props.nodes.map((n: Node) => {
           return {
             ...n,
             data: {
@@ -165,11 +123,11 @@ const DAGDesigner = (props: DAGDesignerProps) => {
             },
           };
         })}
-        edges={edges}
+        edges={props.edges}
         nodeTypes={nodeTypes}
         onInit={setReactFlowInstance}
-        onNodesChange={onNodesChange}
-        onEdgesChange={onEdgesChange}
+        onNodesChange={props.onNodesChange}
+        onEdgesChange={props.onEdgesChange}
         onConnect={onConnect}
         onDragOver={(event: any) => {
           event.preventDefault();
@@ -206,7 +164,7 @@ const DAGDesigner = (props: DAGDesignerProps) => {
                     id: "testAction",
                   };
                 }
-                setNodes((nds) =>
+                props.setNodes((nds: Node[]) =>
                   nds.concat({
                     ...node,
                     position,
@@ -217,20 +175,6 @@ const DAGDesigner = (props: DAGDesignerProps) => {
           }
         }}
       >
-        <Stack padding={1}>
-          <Box>
-            <Button
-              onClick={(e) => {
-                e.stopPropagation();
-                save();
-              }}
-              sx={{ zIndex: 1000 }}
-              variant="contained"
-            >
-              Save
-            </Button>
-          </Box>
-        </Stack>
         <Controls />
         <Background />
       </ReactFlow>
@@ -256,9 +200,11 @@ const DAGDesigner = (props: DAGDesignerProps) => {
           onClick={() => {
             handleContextClose();
             if (selectedNode) {
-              setNodes((nds) => nds.filter((n) => n.id !== selectedNode.id));
-              setEdges((edges) =>
-                edges.filter(
+              props.setNodes((nds: Node[]) =>
+                nds.filter((n) => n.id !== selectedNode.id)
+              );
+              props.setEdges((edges: Edge[]) =>
+                props.edges.filter(
                   (e) =>
                     e.source !== selectedNode.id && e.target !== selectedNode.id
                 )
@@ -294,20 +240,19 @@ const DAGDesigner = (props: DAGDesignerProps) => {
           </Typography>
         </DrawerHeader>
         <Divider />
-        {selectedNode && <NodeProperties node={selectedNode} />}
+        {selectedNode && (
+          <NodeProperties
+            onNodeChange={(node) => {
+              props.setNodes((nds: Node[]) =>
+                nds.map((n) => (n.id === node.id ? node : n))
+              );
+              setSelectedNode(node);
+            }}
+            actionName={props.actionName}
+            node={selectedNode}
+          />
+        )}
       </Drawer>
-      {snackMessage && (
-        <Snackbar
-          anchorOrigin={{ vertical: "top", horizontal: "center" }}
-          open={openSnackBar}
-          autoHideDuration={3000}
-          onClose={handleClose}
-        >
-          <MuiAlert severity={snackMessage.severity}>
-            {snackMessage.message}
-          </MuiAlert>
-        </Snackbar>
-      )}
     </Paper>
   );
 };

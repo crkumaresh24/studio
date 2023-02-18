@@ -9,28 +9,29 @@ import {
   TextField,
 } from "@mui/material";
 import { useState } from "react";
-import { rootTree } from "../../Constants";
-import { DATA } from "../../libs/ValueAssigner";
-import PayloadMapper, { TreeNode } from "../../libs/PayloadMapper";
+import { getRootTree } from "../../../Constants";
+import { DATA_VALUE } from "../../../libs/ValueAssigner";
+import PayloadMapper, { TreeNode } from "../../../libs/PayloadMapper";
 
 interface HTTPDataSourceProps {
   method: string;
   url: string;
   headersTree: TreeNode;
-  headersDefaultValues: Record<string, DATA>;
+  headersDefaultValues: Record<string, DATA_VALUE>;
   pathsTree: TreeNode;
-  pathsDefaultValues: Record<string, DATA>;
+  pathsDefaultValues: Record<string, DATA_VALUE>;
   paramsTree: TreeNode;
-  paramsDefaultValues: Record<string, DATA>;
+  paramsDefaultValues: Record<string, DATA_VALUE>;
   bodyTree: TreeNode;
-  bodyDefaultValues: Record<string, DATA>;
+  bodyDefaultValues: Record<string, DATA_VALUE>;
   onChange: (props: any) => void;
 }
 
 const HTTPDataSource = (props: HTTPDataSourceProps) => {
+  const [selectedPath, setSelectedPath] = useState<string>("");
   const [selectedTab, setSelectedTab] = useState("header");
-
-  const handleChange = (event: React.SyntheticEvent, newValue: string) => {
+  const handleTabChange = (event: React.SyntheticEvent, newValue: string) => {
+    setSelectedPath("");
     setSelectedTab(newValue);
   };
 
@@ -74,7 +75,7 @@ const HTTPDataSource = (props: HTTPDataSourceProps) => {
       <Box sx={{ width: "100%" }}>
         <Tabs
           value={selectedTab}
-          onChange={handleChange}
+          onChange={handleTabChange}
           textColor="secondary"
           indicatorColor="secondary"
           aria-label="secondary tabs example"
@@ -88,13 +89,15 @@ const HTTPDataSource = (props: HTTPDataSourceProps) => {
       {selectedTab === "header" && (
         <PayloadMapper
           levels={1}
-          tree={props.headersTree || rootTree}
+          tree={props.headersTree || getRootTree("header")}
           setTree={(headersTree) => {
             props.onChange({
               ...props,
               headersTree,
             });
           }}
+          selected={selectedPath}
+          setSelected={setSelectedPath}
           mappedFields={props.headersDefaultValues || {}}
           setMappedFields={(headersDefaultValues) => {
             props.onChange({
@@ -107,18 +110,20 @@ const HTTPDataSource = (props: HTTPDataSourceProps) => {
       {selectedTab === "path" && (
         <PayloadMapper
           levels={1}
-          tree={props.pathsTree || rootTree}
+          tree={props.pathsTree || getRootTree("path")}
           setTree={(pathsTree) => {
             props.onChange({
               ...props,
               pathsTree,
             });
           }}
-          mappedFields={props.paramsDefaultValues || {}}
-          setMappedFields={(paramsDefaultValues) => {
+          selected={selectedPath}
+          setSelected={setSelectedPath}
+          mappedFields={props.pathsDefaultValues || {}}
+          setMappedFields={(pathsDefaultValues) => {
             props.onChange({
               ...props,
-              paramsDefaultValues,
+              pathsDefaultValues,
             });
           }}
         />
@@ -126,13 +131,15 @@ const HTTPDataSource = (props: HTTPDataSourceProps) => {
       {selectedTab === "query" && (
         <PayloadMapper
           levels={1}
-          tree={props.paramsTree || rootTree}
+          tree={props.paramsTree || getRootTree("query")}
           setTree={(paramsTree) => {
             props.onChange({
               ...props,
               paramsTree,
             });
           }}
+          selected={selectedPath}
+          setSelected={setSelectedPath}
           mappedFields={props.paramsDefaultValues || {}}
           setMappedFields={(paramsDefaultValues) => {
             props.onChange({
@@ -144,13 +151,16 @@ const HTTPDataSource = (props: HTTPDataSourceProps) => {
       )}
       {selectedTab === "body" && (
         <PayloadMapper
-          tree={props.bodyTree || rootTree}
+          tree={props.bodyTree || getRootTree("request")}
           setTree={(bodyTree) => {
             props.onChange({
               ...props,
               bodyTree,
             });
           }}
+          onlyLeafSelection
+          selected={selectedPath}
+          setSelected={setSelectedPath}
           mappedFields={props.bodyDefaultValues || {}}
           setMappedFields={(bodyDefaultValues) => {
             props.onChange({

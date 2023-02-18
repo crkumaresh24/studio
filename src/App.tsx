@@ -12,6 +12,12 @@ const darkTheme = createTheme({
   },
 });
 
+const lightTheme = createTheme({
+  palette: {
+    mode: "light",
+  },
+});
+
 const App = () => {
   return (
     <ThemeProvider theme={darkTheme}>

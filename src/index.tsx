@@ -6,9 +6,9 @@ import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import reportWebVitals from "./reportWebVitals";
 import ActionsExplorer from "./routes/actions/ActionsExplorer";
 import ComponentsExplorer from "./routes/components/ComponentsExplorer";
-import DesignerHome from "./routes/designer/DesignerHome";
 import DatasourceExplorerHome from "./routes/datasources/DatasourceExplorerHome";
-import SettingsExplorer from "./routes/settings/SettingsExplorer";
+import SettingsPage from "./routes/settings/SettingsPage";
+import DesignerHome from "./routes/actions/designer/DesignerHome";
 
 const router = createBrowserRouter([
   {
@@ -16,15 +16,15 @@ const router = createBrowserRouter([
     element: <App />,
     children: [
       {
-        path: "/",
+        path: "/components",
         element: <ComponentsExplorer />,
       },
       {
         path: "/settings",
-        element: <SettingsExplorer />,
+        element: <SettingsPage />,
       },
       {
-        path: "/datasources",
+        path: "/",
         element: <DatasourceExplorerHome />,
       },
       {

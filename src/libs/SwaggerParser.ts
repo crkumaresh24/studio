@@ -1,10 +1,7 @@
-export interface API {
-  apiId: string;
-  apiURL: string;
-}
+import { KeyValueEntry } from "../Constants";
 
 export const parseSwaggerSpec = (
-  urls: API[],
+  urls: KeyValueEntry[],
   onSuccess: (parsed: any) => void,
   onError: (e: any) => void
 ) => {
@@ -92,33 +89,35 @@ export const parseSwaggerSpec = (
   };
 
   const parse = async (
-    urls: API[],
+    urls: KeyValueEntry[],
     parsedAPI: any = {},
     onSuccess: (parsed: any) => void,
     onFailure: (e: any) => void
   ) => {
     try {
       urls.forEach(async (url) => {
-        const response = await fetch(url.apiURL);
-        if (response.ok) {
-          try {
-            const json = await response.json();
-            parsedAPI = {
-              ...parsedAPI,
-              [url.apiId]: parseSwaggerJSON(json),
-            };
-            const newUrls = urls.filter((u) => u.apiId !== url.apiId);
-            if (newUrls.length > 0) {
-              parse(newUrls, parsedAPI, onSuccess, onFailure);
-            } else {
-              onSuccess(parsedAPI);
+        if (url.value) {
+          const response = await fetch(url.value);
+          if (response.ok) {
+            try {
+              const json = await response.json();
+              parsedAPI = {
+                ...parsedAPI,
+                [url.key]: parseSwaggerJSON(json),
+              };
+              const newUrls = urls.filter((u) => u.key !== url.key);
+              if (newUrls.length > 0) {
+                parse(newUrls, parsedAPI, onSuccess, onFailure);
+              } else {
+                onSuccess(parsedAPI);
+              }
+            } catch (e) {
+              onFailure(e);
             }
-          } catch (e) {
-            onFailure(e);
+          } else {
+            onFailure("api fetch error");
+            return;
           }
-        } else {
-          onFailure("api fetch error");
-          return;
         }
       });
     } catch (e) {

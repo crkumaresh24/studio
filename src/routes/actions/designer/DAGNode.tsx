@@ -3,12 +3,12 @@ import { Handle, NodeProps, Position } from "reactflow";
 import {
   boxHeight,
   boxWidth,
-  handleSideGap,
   handleSize,
   inHandleColor,
+  handleSideGap,
   out0HandleColor,
   out1HandleColor,
-} from "../../Constants";
+} from "../../../Constants";
 import { ToolData } from "./DesignerTools";
 
 const getStyleForType = (data: ToolData): SxProps => {

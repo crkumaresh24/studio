@@ -1,67 +1,83 @@
-import {
-  FormControl,
-  InputLabel,
-  MenuItem,
-  Select,
-  Typography,
-} from "@mui/material";
+import { MenuItem, Select, Typography } from "@mui/material";
 import { Stack } from "@mui/system";
 import { useEffect, useState } from "react";
-import { readStore } from "../services";
-import { DATA } from "./ValueAssigner";
+import { listComponents, readComponent } from "../services";
+import { DATA_VALUE } from "./ValueAssigner";
 import PayloadMapper, { TreeNode } from "./PayloadMapper";
 
 export interface Store {
   tree: TreeNode;
-  defaultValues: Record<string, DATA>;
+  defaultValues: Record<string, DATA_VALUE>;
 }
 
-const StoreSelector = () => {
-  const [store, setStore] = useState<Store>();
-  const [component, setComponent] = useState("");
-  const refreshStore = () => {
-    readStore(setStore, () => {});
+interface StoreSelectorProps {
+  name: string;
+  onNameChange: (name: string) => void;
+  path: string;
+  onPathChange: (path: string) => void;
+}
+
+const StoreSelector = (props: StoreSelectorProps) => {
+  const [tree, setTree] = useState<TreeNode>();
+  const [containers, setContainers] = useState<string[]>([]);
+
+  const refreshContainers = () => {
+    listComponents(setContainers, () => {});
   };
+
   useEffect(() => {
-    refreshStore();
-  }, []);
+    refreshContainers();
+    if (props.name) {
+      readComponent(
+        props.name,
+        (c) => {
+          setTree(c.tree);
+        },
+        () => {}
+      );
+    }
+  }, [props.name]);
 
   return (
     <Stack gap={2}>
-      <FormControl sx={{ minWidth: 120 }}>
-        <InputLabel id="demo-simple-select-helper-label">Component</InputLabel>
-        <Select
-          labelId="http-method-label"
-          id="http=method-select"
-          value={component}
-          label="Component"
-          onChange={(e) => {
-            setComponent(e.target.value);
-          }}
-        >
-          {store &&
-            (store.tree.children || []).map((t) => (
-              <MenuItem value={t.id}>{t.name}</MenuItem>
-            ))}
-        </Select>
-      </FormControl>
-      <Typography>{"Props Selector"}</Typography>
-      {store?.tree && component && (
-        <PayloadMapper
-          tree={
-            (store?.tree.children || []).filter((c) => c.id === component)[0]
+      <Typography>{"Component"}</Typography>
+      <Select
+        labelId="component-slector"
+        id="component-slector-id"
+        value={props.name || ""}
+        onChange={(e) => {
+          if (e.target.value) {
+            readComponent(
+              e.target.value,
+              (c) => {
+                setTree(c.tree);
+                props.onNameChange(e.target.value);
+              },
+              () => {}
+            );
           }
-          setTree={(tree) =>
-            setStore({
-              ...store,
-              tree,
-            })
-          }
-          mappedFields={{}}
-          setMappedFields={() => {}}
-          onlyTree
-        />
-      )}
+        }}
+      >
+        {containers.map((c) => (
+          <MenuItem key={c} value={c}>
+            {c}
+          </MenuItem>
+        ))}
+      </Select>
+      <Typography>{"Property"}</Typography>
+      <Stack padding={1} minHeight={200} sx={{ border: "1px solid dimgrey" }}>
+        {tree && props.name && (
+          <PayloadMapper
+            tree={tree}
+            setTree={setTree}
+            selected={props.path}
+            setSelected={props.onPathChange}
+            mappedFields={{}}
+            setMappedFields={() => {}}
+            onlyTree
+          />
+        )}
+      </Stack>
     </Stack>
   );
 };

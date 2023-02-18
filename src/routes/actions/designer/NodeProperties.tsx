@@ -1,11 +1,17 @@
 import { ContentCopy } from "@mui/icons-material";
 import { IconButton, Stack, TextField, Typography } from "@mui/material";
 import { Node } from "reactflow";
-import StoreSelector from "../../libs/StoreSelector";
-import { DATA_TYPE } from "../../libs/ValueAssigner";
+import ActionsSelector from "../../../libs/ActionsSelector";
+import HTTPSelector from "../../../libs/HTTPSelector";
+import OpenAPISelector from "../../../libs/OpenAPISelector";
+import OpenQuerySelector from "../../../libs/OpenQuerySelector";
+import StoreSelector from "../../../libs/StoreSelector";
+import { DATA_TYPE } from "../../../libs/ValueAssigner";
 
 interface BaseNodePropertiesProps {
+  actionName: string;
   node: Node;
+  onNodeChange: (node: Node) => void;
 }
 
 interface TextAttributeProps {
@@ -47,6 +53,8 @@ const TextAttribute = (props: TextAttributeProps) => {
 interface ComponentSelectorAttributeProps {
   label: string;
   showCopyClipboard?: boolean;
+  value?: any;
+  onValueChange?: (newValue: any) => void;
 }
 
 const ComponentSelectorAttribute = (props: ComponentSelectorAttributeProps) => {
@@ -60,7 +68,24 @@ const ComponentSelectorAttribute = (props: ComponentSelectorAttributeProps) => {
           </IconButton>
         )}
       </Stack>
-      <StoreSelector />
+      <StoreSelector
+        name={(props.value || {}).name || ""}
+        onNameChange={(name) => {
+          props.onValueChange &&
+            props.onValueChange({
+              ...(props.value || {}),
+              name,
+            });
+        }}
+        path={(props.value || {}).path || ""}
+        onPathChange={(path) => {
+          props.onValueChange &&
+            props.onValueChange({
+              ...(props.value || {}),
+              path,
+            });
+        }}
+      />
     </Stack>
   );
 };
@@ -86,6 +111,7 @@ const NodeProperties = (props: BaseNodePropertiesProps) => {
         if (nodeAttribute.type === "string") {
           return (
             <TextAttribute
+              key={props.node.id}
               label={nodeAttribute.label}
               rows={nodeAttribute.rows}
               showCopyClipboard={nodeAttribute.enableCopyclipboard}
@@ -95,8 +121,56 @@ const NodeProperties = (props: BaseNodePropertiesProps) => {
         if (nodeAttribute.type === "store") {
           return (
             <ComponentSelectorAttribute
+              key={props.node.id}
               label={nodeAttribute.label}
               showCopyClipboard={nodeAttribute.enableCopyclipboard}
+              value={props.node.data.value}
+              onValueChange={(value) => {
+                props.onNodeChange({
+                  ...props.node,
+                  data: {
+                    ...props.node.data,
+                    value,
+                  },
+                });
+              }}
+            />
+          );
+        }
+        if (nodeAttribute.type === "action") {
+          return (
+            <ActionsSelector
+              key={props.node.id}
+              excludes={[props.actionName]}
+              selectedAction={undefined}
+              onSelect={(actionName: string) => {}}
+            />
+          );
+        }
+        if (nodeAttribute.type === "http") {
+          return (
+            <HTTPSelector
+              key={props.node.id}
+              selectedHTTP=""
+              onSelect={() => {}}
+            />
+          );
+        }
+        if (nodeAttribute.type === "openapi") {
+          return (
+            <OpenAPISelector
+              key={props.node.id}
+              selectedOpenAPI=""
+              onSelect={() => {}}
+            />
+          );
+        }
+        if (nodeAttribute.type === "openquery") {
+          return (
+            <OpenQuerySelector
+              key={props.node.id}
+              selectedOpenQuery=""
+              onSelect={() => {}}
             />
           );
         }
