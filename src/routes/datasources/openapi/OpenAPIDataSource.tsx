@@ -80,110 +80,108 @@ const OpenAPIDataSource = (props: OpenAPIDataSourceProps) => {
     });
   }, [schema]);
 
-  console.log(props.mode);
-
   return (
     <Box gap={4} sx={{ display: "flex", flexDirection: "column", flex: 1 }}>
-      {props.mode === "create" && (
-        <Box gap={1} sx={{ display: "flex" }}>
-          <FormControl sx={{ minWidth: 120 }}>
-            <InputLabel id="demo-simple-select-helper-label">API ID</InputLabel>
-            <Select
-              labelId="http-method-label"
-              id="http=method-select"
-              value={props.apiID}
-              label="API ID"
-              onChange={(e) => {
-                props.onChange({
-                  ...props,
-                  apiID: e.target.value,
-                });
-                setSchema(
-                  getSchema(
-                    parsedSwagger,
-                    e.target.value,
-                    props.controllerId,
-                    props.operationId
-                  )
-                );
-              }}
-            >
-              {(Object.keys(parsedSwagger) || []).map((apiId) => (
-                <MenuItem value={apiId}>{apiId}</MenuItem>
-              ))}
-            </Select>
-          </FormControl>
-          <FormControl sx={{ minWidth: 120 }}>
-            <InputLabel id="demo-simple-select-helper-label">
-              Controller
-            </InputLabel>
-            <Select
-              labelId="http-method-label"
-              id="http=method-select"
-              value={props.controllerId}
-              label="Controller"
-              onChange={(e) => {
-                props.onChange({
-                  ...props,
-                  controllerId: e.target.value,
-                });
-                setSchema(
-                  getSchema(
-                    parsedSwagger,
-                    props.apiID,
-                    e.target.value,
-                    props.operationId
-                  )
-                );
-              }}
-            >
-              {(
-                Object.keys(
-                  props.apiID ? parsedSwagger[props.apiID] || [] || {} : []
-                ) || []
-              ).map((controller) => (
-                <MenuItem value={controller}>{controller}</MenuItem>
-              ))}
-            </Select>
-          </FormControl>
-          <FormControl sx={{ minWidth: 120 }}>
-            <InputLabel id="demo-simple-select-helper-label">
-              Operation
-            </InputLabel>
-            <Select
-              labelId="http-method-label"
-              id="http=method-select"
-              value={props.operationId}
-              label="Operation"
-              onChange={(e) => {
-                props.onChange({
-                  ...props,
-                  operationId: e.target.value,
-                });
-                setSchema(
-                  getSchema(
-                    parsedSwagger,
-                    props.apiID,
-                    props.controllerId,
-                    e.target.value
-                  )
-                );
-              }}
-            >
-              {(
-                Object.keys(
-                  props.apiID && props.controllerId
-                    ? (parsedSwagger[props.apiID] || {})[props.controllerId] ||
-                        []
-                    : []
-                ) || []
-              ).map((operation) => (
-                <MenuItem value={operation}>{operation}</MenuItem>
-              ))}
-            </Select>
-          </FormControl>
-        </Box>
-      )}
+      <Box gap={1} sx={{ display: "flex" }}>
+        <FormControl sx={{ minWidth: 120 }}>
+          <InputLabel id="demo-simple-select-helper-label">API ID</InputLabel>
+          <Select
+            labelId="http-method-label"
+            id="http=method-select"
+            value={props.apiID}
+            disabled={props.mode === "edit"}
+            label="API ID"
+            onChange={(e) => {
+              props.onChange({
+                ...props,
+                apiID: e.target.value,
+              });
+              setSchema(
+                getSchema(
+                  parsedSwagger,
+                  e.target.value,
+                  props.controllerId,
+                  props.operationId
+                )
+              );
+            }}
+          >
+            {(Object.keys(parsedSwagger) || []).map((apiId) => (
+              <MenuItem value={apiId}>{apiId}</MenuItem>
+            ))}
+          </Select>
+        </FormControl>
+        <FormControl sx={{ minWidth: 120 }}>
+          <InputLabel id="demo-simple-select-helper-label">
+            Controller
+          </InputLabel>
+          <Select
+            labelId="http-method-label"
+            id="http=method-select"
+            value={props.controllerId}
+            disabled={props.mode === "edit"}
+            label="Controller"
+            onChange={(e) => {
+              props.onChange({
+                ...props,
+                controllerId: e.target.value,
+              });
+              setSchema(
+                getSchema(
+                  parsedSwagger,
+                  props.apiID,
+                  e.target.value,
+                  props.operationId
+                )
+              );
+            }}
+          >
+            {(
+              Object.keys(
+                props.apiID ? parsedSwagger[props.apiID] || [] || {} : []
+              ) || []
+            ).map((controller) => (
+              <MenuItem value={controller}>{controller}</MenuItem>
+            ))}
+          </Select>
+        </FormControl>
+        <FormControl sx={{ minWidth: 120 }}>
+          <InputLabel id="demo-simple-select-helper-label">
+            Operation
+          </InputLabel>
+          <Select
+            labelId="http-method-label"
+            id="http=method-select"
+            value={props.operationId}
+            disabled={props.mode === "edit"}
+            label="Operation"
+            onChange={(e) => {
+              props.onChange({
+                ...props,
+                operationId: e.target.value,
+              });
+              setSchema(
+                getSchema(
+                  parsedSwagger,
+                  props.apiID,
+                  props.controllerId,
+                  e.target.value
+                )
+              );
+            }}
+          >
+            {(
+              Object.keys(
+                props.apiID && props.controllerId
+                  ? (parsedSwagger[props.apiID] || {})[props.controllerId] || []
+                  : []
+              ) || []
+            ).map((operation) => (
+              <MenuItem value={operation}>{operation}</MenuItem>
+            ))}
+          </Select>
+        </FormControl>
+      </Box>
       <Box sx={{ width: "100%" }}>
         <Tabs
           value={selectedTab}

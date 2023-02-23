@@ -1,7 +1,12 @@
 import { AddCircle, Delete } from "@mui/icons-material";
-import { Box, Button, Paper, Snackbar, Stack, Typography } from "@mui/material";
+import { Button, Paper, Snackbar, Stack, Typography } from "@mui/material";
 import { useEffect, useState } from "react";
-import { getRootTree, SnackMessage } from "../../Constants";
+import {
+  getRootTree,
+  mergeDefaultValues,
+  SHRINK_SIZE,
+  SnackMessage,
+} from "../../Constants";
 import Explorer, { Action, Row } from "../../libs/Explorer";
 import { DATA_VALUE } from "../../libs/ValueAssigner";
 import { TreeNode } from "../../libs/PayloadMapper";
@@ -49,8 +54,13 @@ const ComponentsExplorer = () => {
   }, []);
 
   const onSave = (name: string, c: Component) => {
+    let json: any = {};
+    mergeDefaultValues(c.tree, c.defaultValues, json);
     saveComponent(
-      c,
+      {
+        ...c,
+        json: json["$"],
+      },
       name,
       () => {
         refresh();
@@ -69,39 +79,15 @@ const ComponentsExplorer = () => {
   };
 
   return (
-    <Stack sx={{ maxWidth: "60%", margin: "auto" }}>
-      <Paper sx={{ minHeight: "calc(100vh - 64px)", padding: 3 }}>
-        {page === "create" && (
-          <SaveComponent
-            mode="create"
-            name=""
-            component={component}
-            onSave={onSave}
-            onBack={() => {
-              setComponent({
-                tree: getRootTree("props"),
-                defaultValues: {},
-              });
-              setPage("list");
-            }}
-          />
-        )}
-        {page === "edit" && clickedRow && (
-          <SaveComponent
-            mode="edit"
-            name={clickedRow.id}
-            component={component}
-            onSave={onSave}
-            onBack={() => {
-              setComponent({
-                tree: getRootTree("props"),
-                defaultValues: {},
-              });
-              setPage("list");
-            }}
-          />
-        )}
-        {page === "list" && (
+    <Stack margin={1} alignItems={"center"}>
+      <Paper
+        sx={{
+          padding: 2,
+          minHeight: "calc(100vh - 104px)",
+          minWidth: SHRINK_SIZE,
+        }}
+      >
+        {page === "list" ? (
           <Stack gap={2}>
             <Stack gap={2} direction={"row"}>
               <Button
@@ -156,6 +142,20 @@ const ComponentsExplorer = () => {
               }))}
             />
           </Stack>
+        ) : (
+          <SaveComponent
+            mode={page}
+            name={page === "edit" && clickedRow ? clickedRow.id : ""}
+            component={component}
+            onSave={onSave}
+            onBack={() => {
+              setComponent({
+                tree: getRootTree("props"),
+                defaultValues: {},
+              });
+              setPage("list");
+            }}
+          />
         )}
       </Paper>
       {snackMessage && (

@@ -9,11 +9,12 @@ import {
   Typography,
 } from "@mui/material";
 import { useEffect, useState } from "react";
-import { Settings, SnackMessage } from "../../Constants";
+import { Settings, SHRINK_SIZE, SnackMessage } from "../../Constants";
 import MuiAlert from "@mui/material/Alert";
 import KeyValueAddition from "../../libs/KeyValueAddition";
 import { readSettings, saveSettings } from "../../services";
 import SaveIcon from "@mui/icons-material/Save";
+import StringListAddition from "../../libs/StringListAddition";
 
 const SettingsPage = () => {
   const [snackMessage, setSnackMessage] = useState<SnackMessage | undefined>();
@@ -50,8 +51,14 @@ const SettingsPage = () => {
   };
 
   return (
-    <Stack sx={{ maxWidth: "60%", margin: "auto" }}>
-      <Paper sx={{ minHeight: "calc(100vh - 64px)", padding: 3 }}>
+    <Stack margin={2} alignItems={"center"}>
+      <Paper
+        sx={{
+          padding: 2,
+          minHeight: "calc(100vh - 104px)",
+          minWidth: SHRINK_SIZE,
+        }}
+      >
         <Stack gap={2}>
           <Stack direction={"row"}>
             <Typography sx={{ flex: 1 }} variant="overline">
@@ -119,9 +126,8 @@ const SettingsPage = () => {
               </RadioGroup>
             </Stack>
 
-            <KeyValueAddition
+            <StringListAddition
               title="Publish Paths"
-              onlyKey
               list={settings.buildPaths}
               onListChange={(list) => {
                 setSettings({

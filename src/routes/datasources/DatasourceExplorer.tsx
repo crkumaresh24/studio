@@ -1,5 +1,5 @@
 import { AddCircle, Delete } from "@mui/icons-material";
-import { Box, Button, Snackbar, Stack, Typography } from "@mui/material";
+import { Button, Snackbar, Stack, Typography } from "@mui/material";
 import MuiAlert from "@mui/material/Alert";
 import { useEffect, useState } from "react";
 import { DATA_SOURCE_TYPE, SnackMessage } from "../../Constants";
@@ -89,32 +89,8 @@ const DatasourceExplorer = (props: DatasourceExplorerProps) => {
   };
 
   return (
-    <Box sx={{ display: "flex", flexDirection: "column", padding: 2, flex: 1 }}>
-      {page === "create" && (
-        <SaveDatasource
-          name={""}
-          mode={"create"}
-          datasource={datasource}
-          onBack={() => {
-            refresh();
-            setPage("list");
-          }}
-          onSave={onSave}
-        />
-      )}
-      {page === "edit" && clickedRow && (
-        <SaveDatasource
-          name={clickedRow.id}
-          mode={"edit"}
-          datasource={datasource}
-          onBack={() => {
-            refresh();
-            setPage("list");
-          }}
-          onSave={onSave}
-        />
-      )}
-      {page === "list" && (
+    <Stack padding={1}>
+      {page === "list" ? (
         <Stack gap={3} justifyContent="center">
           <Stack gap={2} direction={"row"}>
             <Button
@@ -174,6 +150,17 @@ const DatasourceExplorer = (props: DatasourceExplorerProps) => {
             }))}
           />
         </Stack>
+      ) : (
+        <SaveDatasource
+          name={page === "edit" && clickedRow ? clickedRow.id : ""}
+          mode={page}
+          datasource={datasource}
+          onBack={() => {
+            refresh();
+            setPage("list");
+          }}
+          onSave={onSave}
+        />
       )}
       {snackMessage && (
         <Snackbar
@@ -187,7 +174,7 @@ const DatasourceExplorer = (props: DatasourceExplorerProps) => {
           </MuiAlert>
         </Snackbar>
       )}
-    </Box>
+    </Stack>
   );
 };
 

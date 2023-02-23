@@ -12,30 +12,23 @@ import {
   ListItemText,
 } from "@mui/material";
 import { useState } from "react";
-import { KeyValueEntry } from "../Constants";
 
-interface KeyValueAdditionProps {
+interface StringListAdditionProps {
   title: string;
-  list: KeyValueEntry[];
-  onListChange: (list: KeyValueEntry[]) => void;
+  list: string[];
+  onListChange: (list: string[]) => void;
 }
 
-const KeyValueAddition = (props: KeyValueAdditionProps) => {
+const StringListAddition = (props: StringListAdditionProps) => {
   const [showAdd, setShowAdd] = useState<boolean>();
-  const [newEntry, setNewEntry] = useState<KeyValueEntry>({
-    key: "",
-    value: "",
-  });
+  const [newEntry, setNewEntry] = useState<string>("");
   return (
     <Box>
       <Stack alignItems={"center"} direction={"row"}>
         <Typography variant="subtitle1">{props.title}</Typography>
         <IconButton
           onClick={() => {
-            setNewEntry({
-              key: "",
-              value: "",
-            });
+            setNewEntry("");
             setShowAdd(true);
           }}
         >
@@ -47,23 +40,8 @@ const KeyValueAddition = (props: KeyValueAdditionProps) => {
           <TextField
             autoFocus
             size="small"
-            value={newEntry.key}
-            onChange={(e) =>
-              setNewEntry({
-                ...newEntry,
-                key: e.target.value,
-              })
-            }
-          />
-          <TextField
-            size="small"
-            value={newEntry.value}
-            onChange={(e) =>
-              setNewEntry({
-                ...newEntry,
-                value: e.target.value,
-              })
-            }
+            value={newEntry}
+            onChange={(e) => setNewEntry(e.target.value)}
           />
           <Button
             onClick={() => {
@@ -75,10 +53,7 @@ const KeyValueAddition = (props: KeyValueAdditionProps) => {
           </Button>
           <Button
             onClick={() => {
-              setNewEntry({
-                key: "",
-                value: "",
-              });
+              setNewEntry("");
               setShowAdd(false);
             }}
           >
@@ -87,7 +62,7 @@ const KeyValueAddition = (props: KeyValueAdditionProps) => {
         </Stack>
       )}
       <List dense>
-        {(props.list || []).map((keyValue) => {
+        {(props.list || []).map((value) => {
           return (
             <ListItem
               disablePadding
@@ -95,9 +70,7 @@ const KeyValueAddition = (props: KeyValueAdditionProps) => {
                 <IconButton
                   size="small"
                   onClick={() => {
-                    props.onListChange(
-                      props.list.filter((k) => k.key !== keyValue.key)
-                    );
+                    props.onListChange(props.list.filter((k) => k !== value));
                   }}
                 >
                   <Delete />
@@ -106,11 +79,7 @@ const KeyValueAddition = (props: KeyValueAdditionProps) => {
             >
               <ListItemButton>
                 <ListItemText
-                  primary={
-                    <Typography variant="body2">
-                      {keyValue.key + " - " + keyValue.value}
-                    </Typography>
-                  }
+                  primary={<Typography variant="body2">{value}</Typography>}
                 />
               </ListItemButton>
             </ListItem>
@@ -121,4 +90,4 @@ const KeyValueAddition = (props: KeyValueAdditionProps) => {
   );
 };
 
-export default KeyValueAddition;
+export default StringListAddition;

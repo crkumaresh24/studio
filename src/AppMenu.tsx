@@ -1,5 +1,6 @@
 import {
   Api,
+  ArrowDownward,
   AutoAwesomeMotion,
   Build,
   Dataset,
@@ -83,13 +84,14 @@ const AppMenu = () => {
     <Stack>
       <AppBar position="static">
         <Toolbar>
-          <Box gap={2} sx={{ display: "flex", alignItems: "center" }}>
+          <Box sx={{ display: "flex", alignItems: "center" }}>
             <Typography>AppBuilder</Typography>
           </Box>
 
           <Stack margin={"auto"}>
             <Tabs
               value={selectedMenu}
+              textColor="inherit"
               onChange={(e, i) => {
                 if (i === 0) {
                   navigate("/");
@@ -102,13 +104,30 @@ const AppMenu = () => {
               }}
               aria-label="basic tabs example"
             >
-              <Tab icon={<Dataset />} iconPosition="start" label="Services" />
               <Tab
+                disableFocusRipple
+                disableRipple
+                disableTouchRipple
+                icon={<Dataset />}
+                iconPosition="start"
+                label={<Typography>Services</Typography>}
+              />
+              <Tab
+                disableFocusRipple
+                disableRipple
+                disableTouchRipple
                 icon={<AutoAwesomeMotion />}
                 iconPosition="start"
                 label="Components"
               />
-              <Tab icon={<Api />} iconPosition="start" label="Actions" />
+              <Tab
+                disableFocusRipple
+                disableRipple
+                disableTouchRipple
+                icon={<Api />}
+                iconPosition="start"
+                label="Actions"
+              />
             </Tabs>
           </Stack>
 
@@ -124,7 +143,9 @@ const AppMenu = () => {
             </Button>
             <Button
               id="basic-button"
-              endIcon={<Person />}
+              startIcon={<Person />}
+              endIcon={<ArrowDownward />}
+              variant="contained"
               aria-controls={loginOpen ? "basic-menu" : undefined}
               aria-haspopup="true"
               aria-expanded={loginOpen ? "true" : undefined}

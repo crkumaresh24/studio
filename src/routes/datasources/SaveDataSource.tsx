@@ -17,8 +17,7 @@ import { useEffect, useState } from "react";
 import { DATA_SOURCE_TYPE, Settings } from "../../Constants";
 import { PlayArrow } from "@mui/icons-material";
 import { executeOpenAPI } from "../../executors/OpenAPIExecutor";
-import { readSettings } from "../../services";
-import openApiFetch from "../../libs/OpenAPIFetch";
+import { readSettings, readStore } from "../../services";
 import JsonEditor from "../../libs/JsonEditor";
 import { executeHTTP } from "../../executors/HTTPExecutor";
 import { executeOpenQuery } from "../../executors/OpenQueryExecutor";
@@ -34,12 +33,14 @@ interface SaveDatasourceProps {
 const SaveDatasource = (props: SaveDatasourceProps) => {
   const [datasource, setDatasource] = useState<DataSource>(props.datasource);
   const [settings, setSettings] = useState<Settings | undefined>();
+  const [store, setStore] = useState<any | undefined>();
   const [name, setName] = useState<string>(props.name);
   const [showRes, setShowRes] = useState<boolean>(false);
   const [output, setOutput] = useState<any>("");
 
   useEffect(() => {
     readSettings(setSettings, () => {});
+    readStore(setStore, () => {});
   }, []);
 
   const onRunResponse = (response: string) => {
@@ -74,7 +75,7 @@ const SaveDatasource = (props: SaveDatasourceProps) => {
         <IconButton onClick={props.onBack}>
           <BackIcon />
         </IconButton>
-        <Typography sx={{ margin: "auto" }}>
+        <Typography variant="h6" sx={{ margin: "auto" }}>
           {props.mode === "edit" ? props.name : ""}
         </Typography>
         <Button
@@ -92,21 +93,22 @@ const SaveDatasource = (props: SaveDatasourceProps) => {
               datasource.type.toString() === DATA_SOURCE_TYPE.OPENAPI.toString()
             ) {
               settings &&
-                executeOpenAPI(
-                  datasource,
-                  openApiFetch(settings.apis || []),
-                  onRunResponse,
-                  () => {}
-                );
+                executeOpenAPI(datasource, store, onRunResponse, onRunError);
             } else if (
               datasource.type.toString() === DATA_SOURCE_TYPE.HTTP.toString()
             ) {
-              executeHTTP(datasource, onRunResponse, onRunError);
+              executeHTTP(datasource, store, onRunResponse, onRunError);
             } else if (
               datasource.type.toString() ===
               DATA_SOURCE_TYPE.OPENQUERY.toString()
             ) {
-              executeOpenQuery(datasource, settings, onRunResponse, onRunError);
+              executeOpenQuery(
+                datasource,
+                store,
+                settings,
+                onRunResponse,
+                onRunError
+              );
             }
           }}
           startIcon={<PlayArrow />}

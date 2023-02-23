@@ -4,7 +4,7 @@ import { useState } from "react";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import CheckIcon from "@mui/icons-material/Check";
-import ValueAssigner, { DATA_VALUE } from "./ValueAssigner";
+import ValueAssigner, { DATA_TYPE, DATA_VALUE } from "./ValueAssigner";
 import AddIcon from "@mui/icons-material/Add";
 import DeleteIcon from "@mui/icons-material/Delete";
 
@@ -26,6 +26,7 @@ interface PayloadMapperProps {
   setMappedFields: (mappedFields: Record<string, DATA_VALUE>) => void;
   levels?: number;
   onlyLeafSelection?: boolean;
+  requiredTypes?: DATA_TYPE[];
 }
 
 const PayloadMapper = (props: PayloadMapperProps) => {
@@ -235,7 +236,15 @@ const PayloadMapper = (props: PayloadMapperProps) => {
                 [props.selected]: data,
               })
             }
-            requiredTypes={["json", "store", "string", "boolean", "number"]}
+            requiredTypes={
+              props.requiredTypes || [
+                "json",
+                "store",
+                "string",
+                "boolean",
+                "number",
+              ]
+            }
           />
         )}
     </Stack>

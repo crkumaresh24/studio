@@ -54,6 +54,8 @@ export const parseSwaggerSpec = (
             ...parsed[controllerId],
             [operationId]: {
               ...parameters,
+              url: "http://" + json.host + path,
+              method: operation,
               body: schemas,
             },
           },

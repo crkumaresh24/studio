@@ -1,5 +1,4 @@
 import {
-  Box,
   Button,
   IconButton,
   Stack,
@@ -13,7 +12,7 @@ import BackIcon from "@mui/icons-material/ArrowBack";
 import { Component } from "./ComponentsExplorer";
 
 interface SaveComponentProps {
-  mode: "create" | "edit";
+  mode: "create" | "edit" | "list";
   name: string;
   component: Component;
   onSave: (name: string, component: Component) => void;
@@ -30,7 +29,7 @@ const SaveComponent = (props: SaveComponentProps) => {
         <IconButton size="small" onClick={(e) => props.onBack()}>
           <BackIcon />
         </IconButton>
-        <Typography sx={{ margin: "auto" }}>
+        <Typography variant="h6" sx={{ margin: "auto" }}>
           {props.mode === "edit" ? props.name : ""}
         </Typography>
         <Button
@@ -72,6 +71,7 @@ const SaveComponent = (props: SaveComponentProps) => {
             defaultValues,
           })
         }
+        requiredTypes={["json", "string", "boolean", "number"]}
       />
     </Stack>
   );

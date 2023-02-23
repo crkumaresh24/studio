@@ -2,97 +2,34 @@
   "general": [
     {
       "type": "Out1",
-      "shortName": "S",
+      "shortName": "Start",
       "data": { "label": "S", "actionType": "start" }
     },
     {
       "type": "In1",
-      "shortName": "Console",
+      "shortName": "Log",
       "data": {
-        "label": "ConsolePrint",
-        "actionType": "consolePrint",
+        "label": "Log",
+        "actionType": "log",
         "disableSelect": true
       }
     },
     {
       "type": "In1",
-      "shortName": "Res",
+      "shortName": "ActionCall",
       "data": {
-        "label": "Res",
-        "actionType": "runResp",
-        "disableSelect": true
-      }
-    },
-    {
-      "type": "In1",
-      "shortName": "Action",
-      "data": {
-        "label": "Action",
-        "actionType": "action",
+        "label": "ActionCall",
+        "actionType": "actionCall",
         "attributes": [
           {
             "label": "Actions Selector",
-            "type": "actions"
+            "type": "action"
           }
         ]
       }
-    },
-    {
-      "type": "In1",
-      "shortName": "CallBack",
-      "data": { "label": "{}", "actionType": "callBack" }
     }
   ],
-  "container": [
-    {
-      "type": "In1Out0Out1",
-      "shortName": "Get",
-      "data": {
-        "label": "DB Get",
-        "attributes": [
-          {
-            "type": "store"
-          }
-        ],
-        "actionType": "dbget"
-      }
-    },
-    {
-      "type": "In1Out0Out1",
-      "shortName": "Set",
-
-      "data": {
-        "attributes": [
-          {
-            "type": "store"
-          }
-        ],
-        "label": "DB Set",
-        "actionType": "dbset"
-      }
-    },
-    {
-      "type": "In1Out0Out1TwoSides",
-      "shortName": "Copy",
-      "data": {
-        "attributes": [
-          {
-            "label": "Source Selector",
-            "type": "store"
-          },
-          {
-            "label": "Destination Selector",
-            "type": "store"
-          }
-        ],
-        "label": "-->",
-        "actionType": "dbcopy",
-        "side1Types": ["1", "2", "3", "4"],
-        "side2Types": ["1", "2", "3", "4"]
-      }
-    }
-  ],
-  "datasources": [
+  "services": [
     {
       "type": "In1Out0Out1",
       "shortName": "HTTP",
@@ -135,52 +72,63 @@
       }
     }
   ],
-  "comparators": [
+  "components": [
     {
-      "type": "In1Out0Out1TwoSides",
-      "shortName": "==",
+      "type": "In1Out0Out1",
+      "shortName": "Get",
       "data": {
-        "label": "==",
-        "actionType": "comequal"
+        "label": "DB Get",
+        "attributes": [
+          {
+            "type": "store"
+          }
+        ],
+        "actionType": "get"
       }
     },
     {
-      "type": "In1Out0Out1TwoSides",
-      "shortName": "<",
+      "type": "In1Out0Out1",
+      "shortName": "Set",
       "data": {
-        "label": "<",
-        "actionType": "comlesser"
+        "attributes": [
+          {
+            "type": "store"
+          },
+          {
+            "label": "Constant",
+            "type": "constant",
+            "prop": "constantValue"
+          }
+        ],
+        "label": "DB Set",
+        "actionType": "set"
       }
     },
     {
-      "type": "In1Out0Out1TwoSides",
-      "shortName": "<=",
+      "type": "In1Out0Out1",
+      "shortName": "Copy",
       "data": {
-        "label": "<=",
-        "actionType": "comlesser"
-      }
-    },
-    {
-      "type": "In1Out0Out1TwoSides",
-      "shortName": ">",
-      "data": {
-        "label": ">",
-        "actionType": "comgrater"
-      }
-    },
-    {
-      "type": "In1Out0Out1TwoSides",
-      "shortName": ">=",
-      "data": {
-        "label": ">=",
-        "actionType": "comgrater"
+        "attributes": [
+          {
+            "label": "Source Selector",
+            "type": "store",
+            "prop": "source"
+          },
+          {
+            "label": "Destination Selector",
+            "type": "store",
+            "prop": "dest"
+          }
+        ],
+        "label": "-->",
+        "actionType": "copy"
       }
     }
   ],
   "json": [
     {
       "type": "In1Out0Out1",
-      "shortName": "Transf",
+      "shortName": "Transform",
       "data": {
         "label": "Transform",
         "attributes": [
@@ -194,21 +142,157 @@
       }
     },
     {
-      "type": "OneInOneOut",
-      "shortName": "Look",
-      "data": { "label": "LookUp", "actionType": "lookup" }
-    },
-    {
       "type": "In1Out0Out1",
-      "shortName": "StrToJSON",
+      "shortName": "toJSON",
       "data": {
-        "label": "StrToJSON",
-        "actionType": "strToJson",
+        "label": "toJSON",
+        "actionType": "toJSON",
         "disableSelect": true
       }
     }
   ],
-
+  "json-list": [
+    {
+      "type": "In1Out0Out1",
+      "shortName": "SortBy",
+      "data": {
+        "label": "SortBy",
+        "actionType": "sortBy",
+        "attributes": [
+          {
+            "label": "Sort By",
+            "type": "sortType",
+            "prop": "sortType"
+          },
+          {
+            "label": "Keys",
+            "type": "stringList",
+            "prop": "keys"
+          }
+        ]
+      }
+    },
+    {
+      "type": "In1Out0Out1",
+      "shortName": "GroupBy",
+      "data": {
+        "label": "GroupBy",
+        "actionType": "groupBy",
+        "attributes": [
+          {
+            "label": "Keys",
+            "type": "stringList",
+            "prop": "keys"
+          }
+        ]
+      }
+    },
+    {
+      "type": "In1Out0Out1",
+      "shortName": "DistinctBy",
+      "data": {
+        "label": "DistinctBy",
+        "actionType": "distinctBy",
+        "attributes": [
+          {
+            "label": "Keys",
+            "type": "stringList",
+            "prop": "keys"
+          }
+        ]
+      }
+    }
+  ],
+  "comparators": [
+    {
+      "type": "In1Out0Out1",
+      "shortName": "=",
+      "data": {
+        "label": "=",
+        "actionType": "equal",
+        "attributes": [
+          {
+            "label": "Value",
+            "type": "valueAssigner"
+          }
+        ]
+      }
+    },
+    {
+      "type": "In1Out0Out1",
+      "shortName": ">",
+      "data": {
+        "label": ">",
+        "actionType": "greater",
+        "attributes": [
+          {
+            "label": "Value",
+            "type": "valueAssigner",
+            "requiredTypes": ["store", "number"]
+          }
+        ]
+      }
+    },
+    {
+      "type": "In1Out0Out1",
+      "shortName": "<",
+      "data": {
+        "label": "<",
+        "actionType": "lesser",
+        "attributes": [
+          {
+            "label": "Value",
+            "type": "valueAssigner",
+            "requiredTypes": ["store", "number"]
+          }
+        ]
+      }
+    },
+    {
+      "type": "In1Out0Out1",
+      "shortName": ">=",
+      "data": {
+        "label": ">=",
+        "actionType": "greaterEquals",
+        "attributes": [
+          {
+            "label": "Value",
+            "type": "valueAssigner",
+            "requiredTypes": ["store", "number"]
+          }
+        ]
+      }
+    },
+    {
+      "type": "In1Out0Out1",
+      "shortName": "<=",
+      "data": {
+        "label": "<=",
+        "actionType": "lesserEquals",
+        "attributes": [
+          {
+            "label": "Value",
+            "type": "valueAssigner",
+            "requiredTypes": ["store", "number"]
+          }
+        ]
+      }
+    },
+    {
+      "type": "In1Out0Out1",
+      "shortName": "!=",
+      "data": {
+        "label": "!=",
+        "actionType": "notEqual",
+        "attributes": [
+          {
+            "label": "Value",
+            "type": "valueAssigner"
+          }
+        ]
+      }
+    }
+  ],
   "string": [
     {
       "type": "In1Out0Out1",
@@ -219,11 +303,25 @@
         "disableSelect": true
       }
     },
-
     {
       "type": "In1Out0Out1",
-      "shortName": "Equals",
-      "data": { "label": "Equals", "actionType": "equals" }
+      "shortName": "isEqual",
+      "data": {
+        "label": "Equals",
+        "actionType": "equals",
+        "attributes": [
+          {
+            "label": "ignoreCase",
+            "type": "boolean",
+            "prop": "ignoreCase"
+          },
+          {
+            "label": "Value",
+            "type": "valueAssigner",
+            "prop": "text"
+          }
+        ]
+      }
     },
     {
       "type": "In1Out0Out1",
@@ -251,7 +349,22 @@
     {
       "type": "In1Out0Out1",
       "shortName": "Sub String",
-      "data": { "label": "Sub String", "actionType": "subStr" }
+      "data": {
+        "label": "Sub String",
+        "actionType": "subStr",
+        "attributes": [
+          {
+            "label": "Start Index",
+            "type": "number",
+            "prop": "startIndex"
+          },
+          {
+            "label": "End Index",
+            "type": "number",
+            "prop": "endIndex"
+          }
+        ]
+      }
     },
     {
       "type": "In1Out0Out1",
@@ -283,95 +396,87 @@
     {
       "type": "In1Out0Out1",
       "shortName": "Left Pad",
-      "data": { "label": "Left Pad", "actionType": "leftPadStr" }
+      "data": {
+        "label": "Left Pad",
+        "actionType": "leftPadStr",
+        "attributes": [
+          {
+            "label": "Padding Character",
+            "type": "string",
+            "prop": "padChar"
+          },
+          {
+            "label": "Total Length",
+            "type": "number",
+            "prop": "length"
+          }
+        ]
+      }
     },
     {
       "type": "In1Out0Out1",
       "shortName": "Right Pad",
-      "data": { "label": "Right Pad", "actionType": "rightPadStr" }
+      "data": {
+        "label": "Right Pad",
+        "actionType": "rightPadStr",
+        "attributes": [
+          {
+            "label": "Padding Character",
+            "type": "string",
+            "prop": "padChar"
+          },
+          {
+            "label": "Total Length",
+            "type": "number",
+            "prop": "length"
+          }
+        ]
+      }
     },
     {
       "type": "In1Out0Out1",
       "shortName": "Contains",
-      "data": { "label": "Contains", "actionType": "contains" }
+      "data": {
+        "label": "Contains",
+        "actionType": "contains",
+        "attributes": [
+          {
+            "label": "String",
+            "type": "string",
+            "prop": "text"
+          }
+        ]
+      }
     },
     {
       "type": "In1Out0Out1",
       "shortName": "Match",
-      "data": { "label": "Match", "actionType": "match" }
+      "data": {
+        "label": "Match",
+        "actionType": "match",
+        "attributes": [
+          {
+            "label": "Regular Expression",
+            "type": "string",
+            "prop": "regex"
+          }
+        ]
+      }
     },
     {
       "type": "In1Out0Out1",
       "shortName": "Split",
-      "data": { "label": "Split", "actionType": "split" }
-    }
-  ],
-  "string_1D": [
-    {
-      "type": "In1Out0Out1OneSide",
-      "shortName": "Concat",
-      "data": { "label": "Concat", "actionType": "concat" }
-    }
-  ],
-  "string_2D": [
-    {
-      "type": "In1Out0Out1TwoSides",
-      "shortName": "Concat",
-      "data": { "label": "Concat", "actionType": "concat" }
-    }
-  ],
-  "number_1D": [
-    {
-      "type": "In1Out0Out1OneSide",
-      "shortName": "+",
-      "data": { "label": "+", "actionType": "addNum" }
-    },
-    {
-      "type": "In1Out0Out1OneSide",
-      "shortName": "-",
-      "data": { "label": "-", "actionType": "subNum" }
-    },
-    {
-      "type": "In1Out0Out1OneSide",
-      "shortName": "*",
-      "data": { "label": "*", "actionType": "mulNum" }
-    },
-    {
-      "type": "In1Out0Out1OneSide",
-      "shortName": "/",
-      "data": { "label": "/", "actionType": "divNum" }
-    },
-    {
-      "type": "In1Out0Out1OneSide",
-      "shortName": "%",
-      "data": { "label": "%", "actionType": "modNum" }
-    }
-  ],
-  "number_2D": [
-    {
-      "type": "In1Out0Out1TwoSides",
-      "shortName": "+",
-      "data": { "label": "+", "actionType": "addNum" }
-    },
-    {
-      "type": "In1Out0Out1TwoSides",
-      "shortName": "-",
-      "data": { "label": "-", "actionType": "subNum" }
-    },
-    {
-      "type": "In1Out0Out1TwoSides",
-      "shortName": "*",
-      "data": { "label": "*", "actionType": "mulNum" }
-    },
-    {
-      "type": "In1Out0Out1TwoSides",
-      "shortName": "/",
-      "data": { "label": "/", "actionType": "divNum" }
-    },
-    {
-      "type": "In1Out0Out1TwoSides",
-      "shortName": "%",
-      "data": { "label": "%", "actionType": "modNum" }
+      "data": {
+        "label": "Split",
+        "actionType": "split",
+        "attributes": [
+          {
+            "label": "Split Character",
+            "type": "string",
+            "prop": "splitChar"
+          }
+        ]
+      }
     }
   ],
   "list": [
@@ -383,7 +488,17 @@
     {
       "type": "In1Out0Out1",
       "shortName": "Sort",
-      "data": { "label": "Sort", "actionType": "sortLst" }
+      "data": {
+        "label": "Sort",
+        "attributes": [
+          {
+            "label": "Sort By",
+            "type": "sortType",
+            "prop": "sortType"
+          }
+        ],
+        "actionType": "sortLst"
+      }
     },
     {
       "type": "In1Out0Out1",
@@ -394,28 +509,6 @@
       "type": "In1Out0Out1",
       "shortName": "Distinct",
       "data": { "label": "Distinct", "actionType": "distinctLst" }
-    }
-  ],
-  "json_list": [
-    {
-      "type": "Join",
-      "shortName": "Join",
-      "data": { "label": "Join", "actionType": "join" }
-    },
-    {
-      "type": "SortBy",
-      "shortName": "SortBy",
-      "data": { "label": "SortBy", "actionType": "sortBy" }
-    },
-    {
-      "type": "GroupBy",
-      "shortName": "GroupBy",
-      "data": { "label": "GroupBy", "actionType": "groupBy" }
-    },
-    {
-      "type": "DistinctBy",
-      "shortName": "DistinctBy",
-      "data": { "label": "DistinctBy", "actionType": "distinctBy" }
     }
   ]
 }

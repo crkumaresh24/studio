@@ -56,7 +56,7 @@ const OpenQueryDataSource = (props: OpenQueryDataSourceProps) => {
             queryTxt: e.target.value,
           });
         }}
-        rows={9}
+        rows={6}
       />
       <PayloadMapper
         levels={1}

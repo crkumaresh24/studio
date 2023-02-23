@@ -11,6 +11,7 @@ import StoreSelector from "./StoreSelector";
 
 export type DATA_TYPE =
   | "string"
+  | "stringList"
   | "number"
   | "boolean"
   | "json"
@@ -19,7 +20,10 @@ export type DATA_TYPE =
   | "action"
   | "http"
   | "openapi"
-  | "openquery";
+  | "openquery"
+  | "sortType"
+  | "constant"
+  | "valueAssigner";
 
 export interface DATA_VALUE {
   type: DATA_TYPE;

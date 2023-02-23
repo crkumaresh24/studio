@@ -5,6 +5,7 @@ import {
   Menu,
   MenuItem,
   Paper,
+  Stack,
   styled,
   Typography,
   useTheme,
@@ -25,6 +26,7 @@ import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import NodeProperties from "./NodeProperties";
 import { nodeTypes } from "./DAGNode";
 import { readAction } from "../../../services";
+import { Delete, Settings } from "@mui/icons-material";
 
 const DrawerHeader = styled("div")(({ theme }) => ({
   display: "flex",
@@ -123,6 +125,11 @@ const DAGDesigner = (props: DAGDesignerProps) => {
             },
           };
         })}
+        onNodeClick={(e, node) => {
+          console.log(node);
+          setSelectedNode(node);
+          setOpenProperties(true);
+        }}
         edges={props.edges}
         nodeTypes={nodeTypes}
         onInit={setReactFlowInstance}
@@ -161,7 +168,7 @@ const DAGDesigner = (props: DAGDesignerProps) => {
                 ) {
                   node = {
                     ...node,
-                    id: "testAction",
+                    id: props.actionName,
                   };
                 }
                 props.setNodes((nds: Node[]) =>
@@ -194,7 +201,10 @@ const DAGDesigner = (props: DAGDesignerProps) => {
             handleContextClose();
           }}
         >
-          Properties
+          <Stack gap={2} direction={"row"}>
+            <Settings />
+            Properties
+          </Stack>
         </MenuItem>
         <MenuItem
           onClick={() => {
@@ -212,7 +222,10 @@ const DAGDesigner = (props: DAGDesignerProps) => {
             }
           }}
         >
-          Remove Node
+          <Stack gap={2} direction={"row"}>
+            <Delete />
+            Remove Node
+          </Stack>
         </MenuItem>
       </Menu>
       <Drawer

@@ -1,12 +1,26 @@
 import { ContentCopy } from "@mui/icons-material";
-import { IconButton, Stack, TextField, Typography } from "@mui/material";
+import {
+  FormControlLabel,
+  IconButton,
+  Radio,
+  RadioGroup,
+  Stack,
+  Switch,
+  TextField,
+  Typography,
+} from "@mui/material";
 import { Node } from "reactflow";
 import ActionsSelector from "../../../libs/ActionsSelector";
+import ConstantValueAddition from "../../../libs/ConstantValueAddition";
 import HTTPSelector from "../../../libs/HTTPSelector";
 import OpenAPISelector from "../../../libs/OpenAPISelector";
 import OpenQuerySelector from "../../../libs/OpenQuerySelector";
 import StoreSelector from "../../../libs/StoreSelector";
-import { DATA_TYPE } from "../../../libs/ValueAssigner";
+import StringListAddition from "../../../libs/StringListAddition";
+import ValueAssigner, {
+  DATA_TYPE,
+  DATA_VALUE,
+} from "../../../libs/ValueAssigner";
 
 interface BaseNodePropertiesProps {
   actionName: string;
@@ -22,6 +36,7 @@ interface TextAttributeProps {
   value?: string;
   onValueChange?: (newValue: string) => void;
   showCopyClipboard?: boolean;
+  type?: string;
 }
 
 const TextAttribute = (props: TextAttributeProps) => {
@@ -38,6 +53,7 @@ const TextAttribute = (props: TextAttributeProps) => {
       <TextField
         placeholder={props.placeholder}
         multiline={props.rows ? props.rows > 1 : false}
+        type={props.type || "text"}
         rows={props.rows}
         value={props.value}
         onChange={(e) => {
@@ -96,6 +112,8 @@ interface NodeAttibute {
   type: DATA_TYPE;
   rows?: number;
   enableCopyclipboard?: boolean;
+  prop: string;
+  requiredTypes?: DATA_TYPE[];
 }
 
 const NodeProperties = (props: BaseNodePropertiesProps) => {
@@ -115,6 +133,123 @@ const NodeProperties = (props: BaseNodePropertiesProps) => {
               label={nodeAttribute.label}
               rows={nodeAttribute.rows}
               showCopyClipboard={nodeAttribute.enableCopyclipboard}
+              value={
+                props.node.data[nodeAttribute.prop] || props.node.data.value
+              }
+              onValueChange={(value) => {
+                if (nodeAttribute.prop) {
+                  props.onNodeChange({
+                    ...props.node,
+                    data: {
+                      ...props.node.data,
+                      [nodeAttribute.prop]: value,
+                    },
+                  });
+                } else {
+                  props.onNodeChange({
+                    ...props.node,
+                    data: {
+                      ...props.node.data,
+                      value,
+                    },
+                  });
+                }
+              }}
+            />
+          );
+        }
+        if (nodeAttribute.type === "number") {
+          return (
+            <TextAttribute
+              key={props.node.id}
+              label={nodeAttribute.label}
+              type="number"
+              rows={nodeAttribute.rows}
+              showCopyClipboard={nodeAttribute.enableCopyclipboard}
+              value={
+                props.node.data[nodeAttribute.prop] || props.node.data.value
+              }
+              onValueChange={(value) => {
+                if (nodeAttribute.prop) {
+                  props.onNodeChange({
+                    ...props.node,
+                    data: {
+                      ...props.node.data,
+                      [nodeAttribute.prop]: value,
+                    },
+                  });
+                } else {
+                  props.onNodeChange({
+                    ...props.node,
+                    data: {
+                      ...props.node.data,
+                      value,
+                    },
+                  });
+                }
+              }}
+            />
+          );
+        }
+        if (nodeAttribute.type === "boolean") {
+          return (
+            <FormControlLabel
+              sx={{ alignItems: "flex-start", margin: 0 }}
+              control={
+                <Switch
+                  checked={
+                    props.node.data[nodeAttribute.prop] || props.node.data.value
+                  }
+                  onChange={(e, value) => {
+                    if (nodeAttribute.prop) {
+                      props.onNodeChange({
+                        ...props.node,
+                        data: {
+                          ...props.node.data,
+                          [nodeAttribute.prop]: value,
+                        },
+                      });
+                    } else {
+                      props.onNodeChange({
+                        ...props.node,
+                        data: {
+                          ...props.node.data,
+                          value,
+                        },
+                      });
+                    }
+                  }}
+                />
+              }
+              label={nodeAttribute.label}
+              labelPlacement="top"
+            />
+          );
+        }
+        if (nodeAttribute.type === "constant") {
+          return (
+            <ConstantValueAddition
+              isConstant={
+                (props.node.data[nodeAttribute.prop] || {}).isConstant || false
+              }
+              value={
+                (props.node.data[nodeAttribute.prop] || {}).value || {
+                  type: "string",
+                  value: "",
+                }
+              }
+              onChange={(isConstant, value) => {
+                props.onNodeChange({
+                  ...props.node,
+                  data: {
+                    ...props.node.data,
+                    [nodeAttribute.prop]: {
+                      isConstant,
+                      value,
+                    },
+                  },
+                });
+              }}
             />
           );
         }
@@ -124,8 +259,38 @@ const NodeProperties = (props: BaseNodePropertiesProps) => {
               key={props.node.id}
               label={nodeAttribute.label}
               showCopyClipboard={nodeAttribute.enableCopyclipboard}
-              value={props.node.data.value}
+              value={
+                props.node.data[nodeAttribute.prop] || props.node.data.value
+              }
               onValueChange={(value) => {
+                if (nodeAttribute.prop) {
+                  props.onNodeChange({
+                    ...props.node,
+                    data: {
+                      ...props.node.data,
+                      [nodeAttribute.prop]: value,
+                    },
+                  });
+                } else {
+                  props.onNodeChange({
+                    ...props.node,
+                    data: {
+                      ...props.node.data,
+                      value,
+                    },
+                  });
+                }
+              }}
+            />
+          );
+        }
+        if (nodeAttribute.type === "action") {
+          return (
+            <ActionsSelector
+              key={props.node.id}
+              excludes={[props.actionName]}
+              selectedAction={props.node.data.value}
+              onSelect={(value: string) => {
                 props.onNodeChange({
                   ...props.node,
                   data: {
@@ -137,22 +302,20 @@ const NodeProperties = (props: BaseNodePropertiesProps) => {
             />
           );
         }
-        if (nodeAttribute.type === "action") {
-          return (
-            <ActionsSelector
-              key={props.node.id}
-              excludes={[props.actionName]}
-              selectedAction={undefined}
-              onSelect={(actionName: string) => {}}
-            />
-          );
-        }
         if (nodeAttribute.type === "http") {
           return (
             <HTTPSelector
               key={props.node.id}
-              selectedHTTP=""
-              onSelect={() => {}}
+              selectedHTTP={props.node.data.value}
+              onSelect={(value: string) => {
+                props.onNodeChange({
+                  ...props.node,
+                  data: {
+                    ...props.node.data,
+                    value,
+                  },
+                });
+              }}
             />
           );
         }
@@ -160,8 +323,16 @@ const NodeProperties = (props: BaseNodePropertiesProps) => {
           return (
             <OpenAPISelector
               key={props.node.id}
-              selectedOpenAPI=""
-              onSelect={() => {}}
+              selectedOpenAPI={props.node.data.value}
+              onSelect={(value: string) => {
+                props.onNodeChange({
+                  ...props.node,
+                  data: {
+                    ...props.node.data,
+                    value,
+                  },
+                });
+              }}
             />
           );
         }
@@ -169,9 +340,127 @@ const NodeProperties = (props: BaseNodePropertiesProps) => {
           return (
             <OpenQuerySelector
               key={props.node.id}
-              selectedOpenQuery=""
-              onSelect={() => {}}
+              selectedOpenQuery={props.node.data.value}
+              onSelect={(value: string) => {
+                props.onNodeChange({
+                  ...props.node,
+                  data: {
+                    ...props.node.data,
+                    value,
+                  },
+                });
+              }}
             />
+          );
+        }
+        if (nodeAttribute.type === "stringList") {
+          return (
+            <StringListAddition
+              title={nodeAttribute.label}
+              list={
+                props.node.data[nodeAttribute.prop] || props.node.data.value
+              }
+              onListChange={(value) => {
+                if (nodeAttribute.prop) {
+                  props.onNodeChange({
+                    ...props.node,
+                    data: {
+                      ...props.node.data,
+                      [nodeAttribute.prop]: value,
+                    },
+                  });
+                } else {
+                  props.onNodeChange({
+                    ...props.node,
+                    data: {
+                      ...props.node.data,
+                      value,
+                    },
+                  });
+                }
+              }}
+            />
+          );
+        }
+        if (nodeAttribute.type === "sortType") {
+          return (
+            <Stack>
+              <Typography variant="subtitle1">Sort</Typography>
+              <RadioGroup
+                row
+                aria-labelledby="sortType-value-selection"
+                name="sortType-value-selection-group"
+                value={
+                  props.node.data[nodeAttribute.prop] || props.node.data.value
+                }
+                onChange={(e, value) => {
+                  if (nodeAttribute.prop) {
+                    props.onNodeChange({
+                      ...props.node,
+                      data: {
+                        ...props.node.data,
+                        [nodeAttribute.prop]: value,
+                      },
+                    });
+                  } else {
+                    props.onNodeChange({
+                      ...props.node,
+                      data: {
+                        ...props.node.data,
+                        value,
+                      },
+                    });
+                  }
+                }}
+              >
+                <FormControlLabel value="asc" control={<Radio />} label="Asc" />
+                <FormControlLabel
+                  value="desc"
+                  control={<Radio />}
+                  label="Desc"
+                />
+              </RadioGroup>
+            </Stack>
+          );
+        }
+        if (nodeAttribute.type === "valueAssigner") {
+          return (
+            <Stack>
+              <Typography variant="subtitle1">Value</Typography>
+              <ValueAssigner
+                data={
+                  props.node.data[nodeAttribute.prop] ||
+                  props.node.data.value || { type: "string", value: "" }
+                }
+                onDataChange={(value) => {
+                  if (nodeAttribute.prop) {
+                    props.onNodeChange({
+                      ...props.node,
+                      data: {
+                        ...props.node.data,
+                        [nodeAttribute.prop]: value,
+                      },
+                    });
+                  } else {
+                    props.onNodeChange({
+                      ...props.node,
+                      data: {
+                        ...props.node.data,
+                        value,
+                      },
+                    });
+                  }
+                }}
+                requiredTypes={
+                  nodeAttribute.requiredTypes || [
+                    "store",
+                    "string",
+                    "boolean",
+                    "number",
+                  ]
+                }
+              />
+            </Stack>
           );
         }
         return <></>;

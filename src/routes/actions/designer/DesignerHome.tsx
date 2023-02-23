@@ -71,7 +71,7 @@ const DesignerHome = () => {
             >
               <BackIcon />
             </IconButton>
-            <Typography sx={{ margin: "auto" }}>{action}</Typography>
+            <Typography variant="h6" sx={{ margin: "auto" }}>{action}</Typography>
             <Typography>{" Nodes: " + nodes.length}</Typography>
             <Button
               onClick={(e) => {

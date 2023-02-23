@@ -1,11 +1,22 @@
 import { TreeNode } from "./libs/PayloadMapper";
 import { DATA_TYPE } from "./libs/ValueAssigner";
 
-export const WEB_FS_URL = "http://localhost:9099";
+export const SHRINK_SIZE = "64%";
+
+export const WEB_FS_URL = "http://192.168.1.10:9099";
+
+export interface HTTPProps {
+  url: string;
+  method: string;
+  headers: any;
+  pathParams: any;
+  queryParams: any;
+  body: any;
+}
 
 export interface Settings {
   theme: string;
-  buildPaths: KeyValueEntry[];
+  buildPaths: string[];
   apis: KeyValueEntry[];
   queries: KeyValueEntry[];
 }
@@ -33,6 +44,9 @@ export interface KeyValueEntry {
 
 export const resolveData = (data: DATA_VALUE) => {
   if (data.type === "store") {
+    try {
+      // value = jsonata(data.value).evaluate(store);
+    } catch {}
   }
   return data.value;
 };
@@ -56,6 +70,54 @@ export const getRootTree = (name?: string): TreeNode => {
 
 const isLeaf = (node: TreeNode) => {
   return !node.children || node.children.length < 1;
+};
+
+export const executeHTTPCall = (
+  props: HTTPProps,
+  onResponse: (text: string) => void,
+  onError: (status: number, statusText: string, e: string) => void
+) => {
+  console.log(props);
+  const method = props.method || "get";
+  let modifiedURL = props.url;
+
+  Object.keys(props.pathParams || {}).forEach((k) => {
+    modifiedURL = modifiedURL.replaceAll(
+      "{" + k + "}",
+      String(props.pathParams[k] || "")
+    );
+  });
+
+  let queryString: string = "";
+
+  Object.keys(props.queryParams || {}).forEach((k) => {
+    queryString =
+      (queryString ? "&" : "?") + k + "=" + String(props.queryParams[k] || "");
+  });
+
+  modifiedURL = modifiedURL + queryString;
+
+  fetch(modifiedURL, {
+    method: props.method || "GET",
+    headers: {
+      "Content-Type": "application/json",
+      ...(props.headers || {}),
+    },
+    body:
+      method.toLowerCase() === "get" || method.toLowerCase() === "head"
+        ? undefined
+        : JSON.stringify(props.body),
+  })
+    .then((res) => {
+      if (res.ok) {
+        res.text().then(onResponse);
+      } else {
+        res.text().then((resContent) => {
+          onError(res.status, res.statusText, resContent);
+        });
+      }
+    })
+    .catch((e) => onError(500, "error", e.message));
 };
 
 export const mergeDefaultValues = (
@@ -103,18 +165,22 @@ export const stringToObj = (key: string, value: any, obj: any) => {
   return obj;
 };
 
-export const oneLevelTreeToJSON = (
-  tree: TreeNode,
-  defaultValues: Record<string, DATA_VALUE>
+export const mergeJSONWithValues = (
+  json: any,
+  values: any,
+  parent: string = ""
 ) => {
-  let json = {};
-  (tree.children || []).forEach((c) => {
-    json = {
-      ...json,
-      [c.name || c.id]: defaultValues[c.id],
-    };
+  Object.keys(json).forEach((k, i) => {
+    if (json[k] && typeof json[k] === "object" && !Array.isArray(json[k])) {
+      mergeJSONWithValues(json[k], values, parent ? parent + "." + i : "" + i);
+    } else {
+      if (values && values[parent + "." + i]) {
+        json[k] = resolveData(values[parent + "." + i]);
+      } else {
+        json[k] = undefined;
+      }
+    }
   });
-  return json;
 };
 
 export const oneLevelJSONToTree = (json: any, name?: string) => {
@@ -131,49 +197,6 @@ export const oneLevelJSONToTree = (json: any, name?: string) => {
       };
     }),
   };
-};
-
-export const treeToJSON = (
-  tree: TreeNode[],
-  defaultValues: Record<string, any>,
-  keys: Record<string, string>[] = [{}],
-  parsedObj: any = {},
-  parent: string = ""
-): any => {
-  tree &&
-    tree.forEach((t) => {
-      if (isLeaf(t) && t.name) {
-        const valueItem: DATA_VALUE = defaultValues[t.id] || {
-          value: "",
-          type: "string",
-        };
-        let value = valueItem.value;
-        if (valueItem.type === "number") {
-          value = Number(value);
-        }
-        if (valueItem.type === "boolean") {
-          value = value === "true";
-        }
-        stringToObj(t.id, value, parsedObj);
-        keys[0] = {
-          ...keys[0],
-          [parent.concat(".").concat(t.name.toString()).substring(3)]: t.id
-            .toString()
-            .substring(2),
-        };
-      } else {
-        if (t.name && t.children) {
-          treeToJSON(
-            t.children,
-            defaultValues,
-            keys,
-            parsedObj,
-            parent.concat(".").concat(t.name.toString())
-          );
-        }
-      }
-    });
-  return { parsed: parsedObj["0"], keys: keys[0] };
 };
 
 export const jsonToTree = (json: any, parentTree: TreeNode): TreeNode => {

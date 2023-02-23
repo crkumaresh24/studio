@@ -1,7 +1,7 @@
 import { Api, Dataset, Language } from "@mui/icons-material";
 import { Paper, Stack, Tab, Tabs } from "@mui/material";
 import React, { useState } from "react";
-import { DATA_SOURCE_TYPE } from "../../Constants";
+import { DATA_SOURCE_TYPE, SHRINK_SIZE } from "../../Constants";
 import DatasourceExplorer from "./DatasourceExplorer";
 
 const DatasourceExplorerHome = () => {
@@ -11,8 +11,14 @@ const DatasourceExplorerHome = () => {
     setValue(newValue);
   };
   return (
-    <Stack sx={{ maxWidth: "60%", margin: "auto" }}>
-      <Paper sx={{ padding: 1, minHeight: "calc(100vh - 64px)" }}>
+    <Stack margin={1} alignItems={"center"}>
+      <Paper
+        sx={{
+          padding: 1,
+          minHeight: "calc(100vh - 104px)",
+          minWidth: SHRINK_SIZE,
+        }}
+      >
         <Tabs
           value={value}
           onChange={handleChange}

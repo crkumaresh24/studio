@@ -5,6 +5,9 @@ import "@fontsource/roboto/300.css";
 import "@fontsource/roboto/400.css";
 import "@fontsource/roboto/500.css";
 import "@fontsource/roboto/700.css";
+import { useState, useEffect } from "react";
+import { Settings } from "./Constants";
+import { readSettings } from "./services";
 
 const darkTheme = createTheme({
   palette: {
@@ -19,8 +22,27 @@ const lightTheme = createTheme({
 });
 
 const App = () => {
+  const [settings, setSettings] = useState<Settings>({
+    theme: "dark",
+    buildPaths: [],
+    apis: [],
+    queries: [],
+  });
+
+  const refresh = () => {
+    readSettings(
+      (s) => {
+        setSettings(s);
+      },
+      () => {}
+    );
+  };
+
+  useEffect(() => {
+    refresh();
+  }, []);
   return (
-    <ThemeProvider theme={darkTheme}>
+    <ThemeProvider theme={settings.theme === "dark" ? darkTheme : lightTheme}>
       <CssBaseline />
       <main>
         <AppMenu />

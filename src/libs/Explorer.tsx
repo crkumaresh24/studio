@@ -14,6 +14,7 @@ import {
   Typography,
   Stack,
   TextField,
+  Divider,
 } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import FileCopyIcon from "@mui/icons-material/FileCopy";
@@ -162,19 +163,19 @@ const Explorer = (props: ExplorerProps) => {
               }
             }}
           />
-          <Typography variant="subtitle1" sx={{ margin: "auto" }}>
+          <Typography variant="h6" sx={{ margin: "auto" }}>
             {props.title}
           </Typography>
           <TextField size="small" autoComplete="off" placeholder="search" />
         </Stack>
       )}
-
+      <Divider />
       <List dense>
         {props.rows.map((r) => {
           return (
             <ListItem
               style={{
-                paddingLeft: 14,
+                paddingLeft: 12,
               }}
               key={r.id}
               onClick={() => props.onClick && props.onClick(r)}
@@ -220,9 +221,7 @@ const Explorer = (props: ExplorerProps) => {
               )}
               <ListItemButton>
                 <ListItemText
-                  primary={
-                    <Typography variant="subtitle1">{r.title}</Typography>
-                  }
+                  primary={<Typography variant="body1">{r.title}</Typography>}
                 />
               </ListItemButton>
             </ListItem>

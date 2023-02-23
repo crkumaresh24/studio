@@ -3,6 +3,7 @@ import { DataSource } from "../routes/datasources/DatasourceExplorer";
 
 export const executeOpenQuery = (
   datasource: DataSource,
+  store: any,
   settings: Settings | undefined,
   onResponse: (res: string) => void,
   onError: (statusCode: number, statusText: string, response: string) => void

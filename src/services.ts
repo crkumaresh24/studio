@@ -71,7 +71,7 @@ const readStore = (
   onSuccess: (content: any) => void,
   onError: (e: Error) => void
 ) => {
-  fetch(WEB_FS_URL + "/read?path=" + workspace + "/ide/store.json")
+  fetch(WEB_FS_URL + "/read?path=" + workspace + "/ide/dist/store.json")
     .then((req) => req.json())
     .then(onSuccess)
     .catch((e) => {
