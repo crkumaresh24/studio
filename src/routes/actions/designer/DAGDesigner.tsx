@@ -113,7 +113,7 @@ const DAGDesigner = (props: DAGDesignerProps) => {
   return (
     <Paper
       ref={reactFlowWrapper}
-      sx={{ width: "100%", margin: 1, overflow: "auto" }}
+      sx={{ width: "100%", overflow: "auto" }}
     >
       <ReactFlow
         nodes={props.nodes.map((n: Node) => {

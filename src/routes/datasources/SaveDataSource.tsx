@@ -33,14 +33,12 @@ interface SaveDatasourceProps {
 const SaveDatasource = (props: SaveDatasourceProps) => {
   const [datasource, setDatasource] = useState<DataSource>(props.datasource);
   const [settings, setSettings] = useState<Settings | undefined>();
-  const [store, setStore] = useState<any | undefined>();
   const [name, setName] = useState<string>(props.name);
   const [showRes, setShowRes] = useState<boolean>(false);
   const [output, setOutput] = useState<any>("");
 
   useEffect(() => {
     readSettings(setSettings, () => {});
-    readStore(setStore, () => {});
   }, []);
 
   const onRunResponse = (response: string) => {
@@ -89,27 +87,39 @@ const SaveDatasource = (props: SaveDatasourceProps) => {
         </Button>
         <Button
           onClick={() => {
-            if (
-              datasource.type.toString() === DATA_SOURCE_TYPE.OPENAPI.toString()
-            ) {
-              settings &&
-                executeOpenAPI(datasource, store, onRunResponse, onRunError);
-            } else if (
-              datasource.type.toString() === DATA_SOURCE_TYPE.HTTP.toString()
-            ) {
-              executeHTTP(datasource, store, onRunResponse, onRunError);
-            } else if (
-              datasource.type.toString() ===
-              DATA_SOURCE_TYPE.OPENQUERY.toString()
-            ) {
-              executeOpenQuery(
-                datasource,
-                store,
-                settings,
-                onRunResponse,
-                onRunError
-              );
-            }
+            readStore(
+              (store) => {
+                if (
+                  datasource.type.toString() ===
+                  DATA_SOURCE_TYPE.OPENAPI.toString()
+                ) {
+                  settings &&
+                    executeOpenAPI(
+                      datasource,
+                      store,
+                      onRunResponse,
+                      onRunError
+                    );
+                } else if (
+                  datasource.type.toString() ===
+                  DATA_SOURCE_TYPE.HTTP.toString()
+                ) {
+                  executeHTTP(datasource, store, onRunResponse, onRunError);
+                } else if (
+                  datasource.type.toString() ===
+                  DATA_SOURCE_TYPE.OPENQUERY.toString()
+                ) {
+                  executeOpenQuery(
+                    datasource,
+                    store,
+                    settings,
+                    onRunResponse,
+                    onRunError
+                  );
+                }
+              },
+              () => {}
+            );
           }}
           startIcon={<PlayArrow />}
           size="small"

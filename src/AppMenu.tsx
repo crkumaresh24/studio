@@ -1,9 +1,6 @@
 import {
-  Api,
   ArrowDownward,
-  AutoAwesomeMotion,
   Build,
-  Dataset,
   ManageAccounts,
   Person,
   PowerSettingsNew,
@@ -16,8 +13,6 @@ import {
   Box,
   Menu,
   MenuItem,
-  Tab,
-  Tabs,
   Typography,
   Snackbar,
 } from "@mui/material";
@@ -26,8 +21,9 @@ import { useNavigate } from "react-router-dom";
 import MuiAlert from "@mui/material/Alert";
 import SettingsIcon from "@mui/icons-material/Settings";
 import { useEffect } from "react";
-import { readSettings } from "./services";
+import { publish, readSettings } from "./services";
 import { Settings, SnackMessage } from "./Constants";
+import { StyledTab, StyledTabs } from "./App";
 
 const AppMenu = () => {
   let page = 0;
@@ -89,9 +85,8 @@ const AppMenu = () => {
           </Box>
 
           <Stack margin={"auto"}>
-            <Tabs
+            <StyledTabs
               value={selectedMenu}
-              textColor="inherit"
               onChange={(e, i) => {
                 if (i === 0) {
                   navigate("/");
@@ -104,31 +99,10 @@ const AppMenu = () => {
               }}
               aria-label="basic tabs example"
             >
-              <Tab
-                disableFocusRipple
-                disableRipple
-                disableTouchRipple
-                icon={<Dataset />}
-                iconPosition="start"
-                label={<Typography>Services</Typography>}
-              />
-              <Tab
-                disableFocusRipple
-                disableRipple
-                disableTouchRipple
-                icon={<AutoAwesomeMotion />}
-                iconPosition="start"
-                label="Components"
-              />
-              <Tab
-                disableFocusRipple
-                disableRipple
-                disableTouchRipple
-                icon={<Api />}
-                iconPosition="start"
-                label="Actions"
-              />
-            </Tabs>
+              <StyledTab label="Services" />
+              <StyledTab label="Components" />
+              <StyledTab label="Actions" />
+            </StyledTabs>
           </Stack>
 
           <Stack gap={2} direction={"row"}>
@@ -136,6 +110,18 @@ const AppMenu = () => {
               disabled={
                 !settings.buildPaths || settings.buildPaths.length === 0
               }
+              onClick={() => {
+                publish(
+                  settings.buildPaths,
+                  () => {
+                    setSnackMessage({
+                      message: "app published successfully",
+                      severity: "success",
+                    });
+                  },
+                  () => {}
+                );
+              }}
               startIcon={<Build />}
               variant="contained"
             >

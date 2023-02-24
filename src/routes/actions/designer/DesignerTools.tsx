@@ -42,7 +42,7 @@ const DesignerTools = () => {
       );
     };
   return (
-    <Paper sx={{ maxWidth: 350, margin: 1, overflow: "auto" }}>
+    <Paper sx={{ maxWidth: 350, overflow: "auto" }}>
       <Stack>
         {Object.keys(tools).map((group) => {
           return (

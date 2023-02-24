@@ -24,28 +24,28 @@ export const getHTTPPropsFromOpenAPI = (
       ...datasource.props.schema.header,
     },
   };
-  mergeJSONWithValues(headerJSON, datasource.props.headersDefaultValues);
+  mergeJSONWithValues(headerJSON, datasource.props.headersDefaultValues, store);
 
   const pathJSON = {
     path: {
       ...datasource.props.schema.path,
     },
   };
-  mergeJSONWithValues(pathJSON, datasource.props.pathsDefaultValues);
+  mergeJSONWithValues(pathJSON, datasource.props.pathsDefaultValues, store);
 
   const queryJSON = {
     query: {
       ...datasource.props.schema.query,
     },
   };
-  mergeJSONWithValues(queryJSON, datasource.props.paramsDefaultValues);
+  mergeJSONWithValues(queryJSON, datasource.props.paramsDefaultValues, store);
 
   const bodyJSON = {
     body: {
       ...datasource.props.schema.body,
     },
   };
-  mergeJSONWithValues(bodyJSON, datasource.props.bodyDefaultValues);
+  mergeJSONWithValues(bodyJSON, datasource.props.bodyDefaultValues, store);
 
   return {
     url,

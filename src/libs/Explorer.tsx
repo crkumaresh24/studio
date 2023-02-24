@@ -144,7 +144,7 @@ const Explorer = (props: ExplorerProps) => {
   };
 
   return (
-    <Stack gap={2} justifyContent="center">
+    <Stack gap={1} justifyContent="center">
       {props.showSearch && (
         <Stack gap={5} direction={"row"} alignItems="center">
           <Checkbox
@@ -170,7 +170,7 @@ const Explorer = (props: ExplorerProps) => {
         </Stack>
       )}
       <Divider />
-      <List dense>
+      <List disablePadding dense>
         {props.rows.map((r) => {
           return (
             <ListItem

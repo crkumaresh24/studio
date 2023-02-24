@@ -2,7 +2,7 @@ import { AddCircle, Delete } from "@mui/icons-material";
 import { Box, Button, Paper, Stack, Typography } from "@mui/material";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { SHRINK_SIZE } from "../../Constants";
+import { CONTAINER_HEIGHT, SHRINK_SIZE } from "../../Constants";
 import Explorer, { Row, Action } from "../../libs/Explorer";
 import { listActions, removeAction, saveAction } from "../../services";
 import CreateAction from "./CreateAction";
@@ -22,11 +22,11 @@ const ActionsExplorer = () => {
   }, []);
 
   return (
-    <Stack margin={1} alignItems={"center"}>
+    <Stack margin={0.25} alignItems={"center"}>
       <Paper
         sx={{
-          padding: 2,
-          minHeight: "calc(100vh - 104px)",
+          padding: 1,
+          minHeight: CONTAINER_HEIGHT,
           minWidth: SHRINK_SIZE,
         }}
       >
@@ -78,7 +78,6 @@ const ActionsExplorer = () => {
               }}
               onClick={(row: Row) => {
                 navigate("/designer?action=" + row.id);
-                // window.open("/designer?action=" + row.id, "_blank");
               }}
               rows={list.map((c) => ({
                 id: c,

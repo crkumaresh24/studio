@@ -18,7 +18,7 @@ export const executeOpenQuery = (
     console.log(url);
   }
   if (url) {
-    mergeDefaultValues(tree, defaultValues, queryVars);
+    mergeDefaultValues(tree, defaultValues, queryVars, store);
     fetch(url + "/execute", {
       method: "POST",
       headers: {

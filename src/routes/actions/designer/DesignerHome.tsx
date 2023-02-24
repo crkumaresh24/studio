@@ -55,9 +55,7 @@ const DesignerHome = () => {
       {action ? (
         <Stack>
           <Stack
-            paddingTop={2}
-            paddingLeft={2}
-            paddingRight={2}
+            padding={1}
             direction={"row"}
             alignItems={"center"}
             justifyContent={"center"}
@@ -71,7 +69,9 @@ const DesignerHome = () => {
             >
               <BackIcon />
             </IconButton>
-            <Typography variant="h6" sx={{ margin: "auto" }}>{action}</Typography>
+            <Typography variant="h6" sx={{ margin: "auto" }}>
+              {action}
+            </Typography>
             <Typography>{" Nodes: " + nodes.length}</Typography>
             <Button
               onClick={(e) => {
@@ -86,7 +86,7 @@ const DesignerHome = () => {
             </Button>
           </Stack>
 
-          <Stack direction={"row"} sx={{ height: "calc(100vh - 120px)" }}>
+          <Stack gap={0.25} direction={"row"} sx={{ height: "calc(100vh - 120px)" }}>
             <DesignerTools />
             <DAGDesigner
               actionName={action}

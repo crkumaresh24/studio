@@ -2,6 +2,7 @@ import { AddCircle, Delete } from "@mui/icons-material";
 import { Button, Paper, Snackbar, Stack, Typography } from "@mui/material";
 import { useEffect, useState } from "react";
 import {
+  CONTAINER_HEIGHT,
   getRootTree,
   mergeDefaultValues,
   SHRINK_SIZE,
@@ -55,11 +56,18 @@ const ComponentsExplorer = () => {
 
   const onSave = (name: string, c: Component) => {
     let json: any = {};
-    mergeDefaultValues(c.tree, c.defaultValues, json);
+    let keys: any = {};
+    mergeDefaultValues(c.tree, c.defaultValues, json, {}, keys);
+    let sanitizedKeys: any = {};
+    Object.keys(keys || {}).forEach((k) => {
+      sanitizedKeys[k.replace("props", name)] = keys[k];
+    });
+    console.log(sanitizedKeys);
     saveComponent(
       {
         ...c,
         json: json["$"],
+        keys: sanitizedKeys,
       },
       name,
       () => {
@@ -79,11 +87,11 @@ const ComponentsExplorer = () => {
   };
 
   return (
-    <Stack margin={1} alignItems={"center"}>
+    <Stack margin={0.25} alignItems={"center"}>
       <Paper
         sx={{
-          padding: 2,
-          minHeight: "calc(100vh - 104px)",
+          padding: 1,
+          minHeight: CONTAINER_HEIGHT,
           minWidth: SHRINK_SIZE,
         }}
       >

@@ -1,4 +1,5 @@
-import { Select, MenuItem, Stack, Typography } from "@mui/material";
+import { OpenInNew } from "@mui/icons-material";
+import { Select, MenuItem, Stack, Typography, IconButton } from "@mui/material";
 import { useEffect, useState } from "react";
 import { listActions } from "../services";
 
@@ -17,7 +18,18 @@ export const ActionsSelector = (props: ActionsSelectorProps) => {
 
   return (
     <Stack gap={2}>
-      <Typography>Action</Typography>
+      <Stack gap={1} alignItems={"center"} direction={"row"}>
+        <Typography>Action</Typography>
+        <IconButton
+          disabled={!props.selectedAction}
+          onClick={() => {
+            window.open("/designer?action=" + props.selectedAction, "_blank");
+          }}
+          size="small"
+        >
+          <OpenInNew />
+        </IconButton>
+      </Stack>
       <Select
         labelId="actions-method-label"
         id="actions-method-select"

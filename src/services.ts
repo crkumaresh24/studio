@@ -71,12 +71,10 @@ const readStore = (
   onSuccess: (content: any) => void,
   onError: (e: Error) => void
 ) => {
-  fetch(WEB_FS_URL + "/read?path=" + workspace + "/ide/dist/store.json")
+  fetch(WEB_FS_URL + "/store?workspace=" + workspace)
     .then((req) => req.json())
     .then(onSuccess)
-    .catch((e) => {
-      onError(e);
-    });
+    .catch(onError);
 };
 
 const saveDatasource = (
@@ -228,6 +226,25 @@ const readSettings = (
     .catch(onError);
 };
 
+const publish = (
+  targetPaths: string[],
+  onSuccess: (res: string) => void,
+  onError: (e: Error) => void
+) => {
+  fetch(WEB_FS_URL + "/publish?workspace=" + workspace, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      targetPaths,
+    }),
+  })
+    .then((req) => req.text())
+    .then(onSuccess)
+    .catch(onError);
+};
+
 export {
   saveComponent,
   readComponent,
@@ -245,4 +262,5 @@ export {
   saveStore,
   saveSettings,
   readSettings,
+  publish,
 };

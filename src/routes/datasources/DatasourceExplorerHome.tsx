@@ -1,7 +1,11 @@
-import { Api, Dataset, Language } from "@mui/icons-material";
-import { Paper, Stack, Tab, Tabs } from "@mui/material";
+import { Paper, Stack } from "@mui/material";
 import React, { useState } from "react";
-import { DATA_SOURCE_TYPE, SHRINK_SIZE } from "../../Constants";
+import { StyledTab, StyledTabs } from "../../App";
+import {
+  CONTAINER_HEIGHT,
+  DATA_SOURCE_TYPE,
+  SHRINK_SIZE,
+} from "../../Constants";
 import DatasourceExplorer from "./DatasourceExplorer";
 
 const DatasourceExplorerHome = () => {
@@ -11,23 +15,23 @@ const DatasourceExplorerHome = () => {
     setValue(newValue);
   };
   return (
-    <Stack margin={1} alignItems={"center"}>
+    <Stack margin={0.25} alignItems={"center"}>
       <Paper
         sx={{
           padding: 1,
-          minHeight: "calc(100vh - 104px)",
+          minHeight: CONTAINER_HEIGHT,
           minWidth: SHRINK_SIZE,
         }}
       >
-        <Tabs
+        <StyledTabs
           value={value}
           onChange={handleChange}
           aria-label="basic tabs example"
         >
-          <Tab icon={<Language />} iconPosition="start" label="HTTP" />
-          <Tab icon={<Api />} iconPosition="start" label="OpenAPI (Swagger)" />
-          <Tab icon={<Dataset />} iconPosition="start" label="Openquery" />
-        </Tabs>
+          <StyledTab label="HTTP" />
+          <StyledTab label="OpenAPI (Swagger)" />
+          <StyledTab label="OpenQuery" />
+        </StyledTabs>
 
         <Stack padding={1}>
           {value === 0 && <DatasourceExplorer type={DATA_SOURCE_TYPE.HTTP} />}

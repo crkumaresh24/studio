@@ -1,7 +1,8 @@
 import { TreeNode } from "./libs/PayloadMapper";
 import { DATA_TYPE } from "./libs/ValueAssigner";
 
-export const SHRINK_SIZE = "64%";
+export const SHRINK_SIZE = "72%";
+export const CONTAINER_HEIGHT = "calc(100vh - 80px)";
 
 export const WEB_FS_URL = "http://192.168.1.10:9099";
 
@@ -42,10 +43,11 @@ export interface KeyValueEntry {
   value?: string;
 }
 
-export const resolveData = (data: DATA_VALUE) => {
-  if (data.type === "store") {
+export const resolveData = (data: DATA_VALUE, store: any) => {
+  if (store && data.value && data.type === "store") {
+    const { name, path } = data.value;
     try {
-      // value = jsonata(data.value).evaluate(store);
+      return (((store[name] || {}).values || {})[path] || {}).value;
     } catch {}
   }
   return data.value;
@@ -124,18 +126,20 @@ export const mergeDefaultValues = (
   tree: TreeNode,
   values: Record<string, DATA_VALUE>,
   json: any,
+  store: any,
   keys?: Record<string, string>,
   parent: string = ""
 ) => {
   if (tree) {
     if (isLeaf(tree)) {
       if (keys) {
-        keys[tree.id] = parent + "." + tree.name;
+        keys[parent + "." + tree.name] = tree.id;
       }
       stringToObj(
         tree.path,
         values[tree.id] || { type: "string", value: "" },
-        json
+        json,
+        store
       );
     } else {
       (tree.children || []).forEach((c) => {
@@ -143,6 +147,7 @@ export const mergeDefaultValues = (
           c,
           values,
           json,
+          store,
           keys,
           parent ? parent + "." + tree.name : tree.name
         );
@@ -151,7 +156,12 @@ export const mergeDefaultValues = (
   }
 };
 
-export const stringToObj = (key: string, value: any, obj: any) => {
+export const stringToObj = (
+  key: string,
+  value: DATA_VALUE,
+  obj: any,
+  store: any
+) => {
   const parts = key.split(".");
   const lastKey = parts.pop();
   if (lastKey) {
@@ -160,7 +170,7 @@ export const stringToObj = (key: string, value: any, obj: any) => {
       if (typeof obj[part] != "object") obj[part] = {};
       obj = obj[part];
     }
-    obj[lastKey] = resolveData(value);
+    obj[lastKey] = resolveData(value, store);
   }
   return obj;
 };
@@ -168,14 +178,20 @@ export const stringToObj = (key: string, value: any, obj: any) => {
 export const mergeJSONWithValues = (
   json: any,
   values: any,
+  store: any,
   parent: string = ""
 ) => {
   Object.keys(json).forEach((k, i) => {
     if (json[k] && typeof json[k] === "object" && !Array.isArray(json[k])) {
-      mergeJSONWithValues(json[k], values, parent ? parent + "." + i : "" + i);
+      mergeJSONWithValues(
+        json[k],
+        values,
+        store,
+        parent ? parent + "." + i : "" + i
+      );
     } else {
       if (values && values[parent + "." + i]) {
-        json[k] = resolveData(values[parent + "." + i]);
+        json[k] = resolveData(values[parent + "." + i], store);
       } else {
         json[k] = undefined;
       }

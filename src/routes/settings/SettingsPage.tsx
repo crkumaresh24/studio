@@ -9,7 +9,7 @@ import {
   Typography,
 } from "@mui/material";
 import { useEffect, useState } from "react";
-import { Settings, SHRINK_SIZE, SnackMessage } from "../../Constants";
+import { CONTAINER_HEIGHT, Settings, SHRINK_SIZE, SnackMessage } from "../../Constants";
 import MuiAlert from "@mui/material/Alert";
 import KeyValueAddition from "../../libs/KeyValueAddition";
 import { readSettings, saveSettings } from "../../services";
@@ -51,11 +51,11 @@ const SettingsPage = () => {
   };
 
   return (
-    <Stack margin={2} alignItems={"center"}>
+    <Stack margin={0.25} alignItems={"center"}>
       <Paper
         sx={{
           padding: 2,
-          minHeight: "calc(100vh - 104px)",
+          minHeight: CONTAINER_HEIGHT,
           minWidth: SHRINK_SIZE,
         }}
       >
