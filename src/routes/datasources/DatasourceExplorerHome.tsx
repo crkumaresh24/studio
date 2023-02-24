@@ -1,11 +1,7 @@
 import { Paper, Stack } from "@mui/material";
 import React, { useState } from "react";
 import { StyledTab, StyledTabs } from "../../App";
-import {
-  CONTAINER_HEIGHT,
-  DATA_SOURCE_TYPE,
-  SHRINK_SIZE,
-} from "../../Constants";
+import { CONTAINER_HEIGHT, DATA_SOURCE_TYPE } from "../../Constants";
 import DatasourceExplorer from "./DatasourceExplorer";
 
 const DatasourceExplorerHome = () => {
@@ -15,14 +11,15 @@ const DatasourceExplorerHome = () => {
     setValue(newValue);
   };
   return (
-    <Stack margin={0.25} alignItems={"center"}>
-      <Paper
-        sx={{
-          padding: 1,
-          minHeight: CONTAINER_HEIGHT,
-          minWidth: SHRINK_SIZE,
-        }}
-      >
+    <Paper
+      sx={{
+        padding: 1,
+        margin: "auto",
+        minHeight: CONTAINER_HEIGHT,
+        width: "70%",
+      }}
+    >
+      <Stack>
         <StyledTabs
           value={value}
           onChange={handleChange}
@@ -42,8 +39,8 @@ const DatasourceExplorerHome = () => {
             <DatasourceExplorer type={DATA_SOURCE_TYPE.OPENQUERY} />
           )}
         </Stack>
-      </Paper>
-    </Stack>
+      </Stack>
+    </Paper>
   );
 };
 

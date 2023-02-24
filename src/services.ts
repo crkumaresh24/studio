@@ -1,5 +1,6 @@
-import { DATA_SOURCE_TYPE, WEB_FS_URL } from "./Constants";
+import { DATA_SOURCE_TYPE } from "./Constants";
 
+const WEB_FS_URL = "http://localhost:9099";
 const workspace = "/workspace";
 
 const saveComponent = (

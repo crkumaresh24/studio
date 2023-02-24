@@ -91,7 +91,7 @@ const DatasourceExplorer = (props: DatasourceExplorerProps) => {
   return (
     <Stack padding={1}>
       {page === "list" ? (
-        <Stack gap={3} justifyContent="center">
+        <Stack gap={3}>
           <Stack gap={2} direction={"row"}>
             <Button
               onClick={(e) => {

@@ -4,8 +4,6 @@ import { DATA_TYPE } from "./libs/ValueAssigner";
 export const SHRINK_SIZE = "72%";
 export const CONTAINER_HEIGHT = "calc(100vh - 80px)";
 
-export const WEB_FS_URL = "http://192.168.1.10:9099";
-
 export interface HTTPProps {
   url: string;
   method: string;

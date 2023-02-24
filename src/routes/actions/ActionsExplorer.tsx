@@ -2,7 +2,7 @@ import { AddCircle, Delete } from "@mui/icons-material";
 import { Box, Button, Paper, Stack, Typography } from "@mui/material";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { CONTAINER_HEIGHT, SHRINK_SIZE } from "../../Constants";
+import { CONTAINER_HEIGHT } from "../../Constants";
 import Explorer, { Row, Action } from "../../libs/Explorer";
 import { listActions, removeAction, saveAction } from "../../services";
 import CreateAction from "./CreateAction";
@@ -22,14 +22,15 @@ const ActionsExplorer = () => {
   }, []);
 
   return (
-    <Stack margin={0.25} alignItems={"center"}>
-      <Paper
-        sx={{
-          padding: 1,
-          minHeight: CONTAINER_HEIGHT,
-          minWidth: SHRINK_SIZE,
-        }}
-      >
+    <Paper
+      sx={{
+        padding: 1,
+        margin: "auto",
+        minHeight: CONTAINER_HEIGHT,
+        width: "70%",
+      }}
+    >
+      <Stack padding={2}>
         {page === "create" && (
           <CreateAction
             onSave={(name) => {
@@ -86,8 +87,8 @@ const ActionsExplorer = () => {
             />
           </Box>
         )}
-      </Paper>
-    </Stack>
+      </Stack>
+    </Paper>
   );
 };
 

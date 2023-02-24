@@ -1,6 +1,7 @@
 import {
   createTheme,
   CssBaseline,
+  Stack,
   styled,
   Tab,
   Tabs,
@@ -99,8 +100,19 @@ const App = () => {
     <ThemeProvider theme={settings.theme === "dark" ? darkTheme : lightTheme}>
       <CssBaseline />
       <main>
-        <AppMenu />
-        <Outlet />
+        <Stack
+          paddingLeft={2}
+          paddingRight={2}
+          direction={"row"}
+          alignItems={"center"}
+          sx={{ minHeight: 56 }}
+        >
+          {"App Studio"}
+        </Stack>
+        <Stack gap={2} direction={"row"}>
+          <AppMenu />
+          <Outlet />
+        </Stack>
       </main>
     </ThemeProvider>
   );

@@ -9,7 +9,12 @@ import {
   Typography,
 } from "@mui/material";
 import { useEffect, useState } from "react";
-import { CONTAINER_HEIGHT, Settings, SHRINK_SIZE, SnackMessage } from "../../Constants";
+import {
+  CONTAINER_HEIGHT,
+  Settings,
+  SHRINK_SIZE,
+  SnackMessage,
+} from "../../Constants";
 import MuiAlert from "@mui/material/Alert";
 import KeyValueAddition from "../../libs/KeyValueAddition";
 import { readSettings, saveSettings } from "../../services";
@@ -51,14 +56,15 @@ const SettingsPage = () => {
   };
 
   return (
-    <Stack margin={0.25} alignItems={"center"}>
-      <Paper
-        sx={{
-          padding: 2,
-          minHeight: CONTAINER_HEIGHT,
-          minWidth: SHRINK_SIZE,
-        }}
-      >
+    <Paper
+      sx={{
+        padding: 1,
+        margin: "auto",
+        minHeight: CONTAINER_HEIGHT,
+        width: "70%",
+      }}
+    >
+      <Stack padding={1}>
         <Stack gap={2}>
           <Stack direction={"row"}>
             <Typography sx={{ flex: 1 }} variant="overline">
@@ -160,20 +166,21 @@ const SettingsPage = () => {
             />
           </Stack>
         </Stack>
-      </Paper>
-      {snackMessage && (
-        <Snackbar
-          anchorOrigin={{ vertical: "top", horizontal: "center" }}
-          open={snackMessage.message !== undefined}
-          autoHideDuration={3000}
-          onClose={handleSnackClose}
-        >
-          <MuiAlert severity={snackMessage.severity}>
-            {snackMessage.message}
-          </MuiAlert>
-        </Snackbar>
-      )}
-    </Stack>
+
+        {snackMessage && (
+          <Snackbar
+            anchorOrigin={{ vertical: "top", horizontal: "center" }}
+            open={snackMessage.message !== undefined}
+            autoHideDuration={3000}
+            onClose={handleSnackClose}
+          >
+            <MuiAlert severity={snackMessage.severity}>
+              {snackMessage.message}
+            </MuiAlert>
+          </Snackbar>
+        )}
+      </Stack>
+    </Paper>
   );
 };
 

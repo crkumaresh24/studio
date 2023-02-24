@@ -1,11 +1,18 @@
-import { Button, IconButton, Snackbar, Stack, Typography } from "@mui/material";
+import {
+  Button,
+  IconButton,
+  Paper,
+  Snackbar,
+  Stack,
+  Typography,
+} from "@mui/material";
 import { useMemo, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import DAGDesigner from "./DAGDesigner";
 import BackIcon from "@mui/icons-material/ArrowBack";
 import DesignerTools from "./DesignerTools";
 import { saveAction } from "../../../services";
-import { SnackMessage } from "../../../Constants";
+import { CONTAINER_HEIGHT, SnackMessage } from "../../../Constants";
 import MuiAlert from "@mui/material/Alert";
 import { useNodesState, useEdgesState } from "reactflow";
 
@@ -51,15 +58,21 @@ const DesignerHome = () => {
   };
 
   return (
-    <>
+    <Paper
+      sx={{
+        minHeight: CONTAINER_HEIGHT,
+        width: "90%",
+      }}
+    >
       {action ? (
         <Stack>
           <Stack
-            padding={1}
+            margin={1}
+            paddingRight={2}
+            gap={2}
             direction={"row"}
             alignItems={"center"}
             justifyContent={"center"}
-            gap={3}
           >
             <IconButton
               size="small"
@@ -86,7 +99,12 @@ const DesignerHome = () => {
             </Button>
           </Stack>
 
-          <Stack gap={0.25} direction={"row"} sx={{ height: "calc(100vh - 120px)" }}>
+          <Stack
+            margin={1}
+            gap={1}
+            direction={"row"}
+            sx={{ height: "calc(100vh - 120px)" }}
+          >
             <DesignerTools />
             <DAGDesigner
               actionName={action}
@@ -114,7 +132,7 @@ const DesignerHome = () => {
           </MuiAlert>
         </Snackbar>
       )}
-    </>
+    </Paper>
   );
 };
 

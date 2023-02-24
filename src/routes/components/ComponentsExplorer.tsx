@@ -5,7 +5,6 @@ import {
   CONTAINER_HEIGHT,
   getRootTree,
   mergeDefaultValues,
-  SHRINK_SIZE,
   SnackMessage,
 } from "../../Constants";
 import Explorer, { Action, Row } from "../../libs/Explorer";
@@ -87,14 +86,15 @@ const ComponentsExplorer = () => {
   };
 
   return (
-    <Stack margin={0.25} alignItems={"center"}>
-      <Paper
-        sx={{
-          padding: 1,
-          minHeight: CONTAINER_HEIGHT,
-          minWidth: SHRINK_SIZE,
-        }}
-      >
+    <Paper
+      sx={{
+        padding: 1,
+        margin: "auto",
+        minHeight: CONTAINER_HEIGHT,
+        width: "70%",
+      }}
+    >
+      <Stack padding={2}>
         {page === "list" ? (
           <Stack gap={2}>
             <Stack gap={2} direction={"row"}>
@@ -165,20 +165,20 @@ const ComponentsExplorer = () => {
             }}
           />
         )}
-      </Paper>
-      {snackMessage && (
-        <Snackbar
-          anchorOrigin={{ vertical: "top", horizontal: "center" }}
-          open={snackMessage.message !== undefined}
-          autoHideDuration={3000}
-          onClose={handleSnackClose}
-        >
-          <MuiAlert severity={snackMessage.severity}>
-            {snackMessage.message}
-          </MuiAlert>
-        </Snackbar>
-      )}
-    </Stack>
+        {snackMessage && (
+          <Snackbar
+            anchorOrigin={{ vertical: "top", horizontal: "center" }}
+            open={snackMessage.message !== undefined}
+            autoHideDuration={3000}
+            onClose={handleSnackClose}
+          >
+            <MuiAlert severity={snackMessage.severity}>
+              {snackMessage.message}
+            </MuiAlert>
+          </Snackbar>
+        )}
+      </Stack>
+    </Paper>
   );
 };
 
