@@ -68,6 +68,7 @@ const StoreSelector = (props: StoreSelectorProps) => {
       <Stack padding={1} minHeight={200} sx={{ border: "1px solid dimgrey" }}>
         {tree && props.name && (
           <PayloadMapper
+            readonly
             tree={tree}
             setTree={setTree}
             selected={props.path}

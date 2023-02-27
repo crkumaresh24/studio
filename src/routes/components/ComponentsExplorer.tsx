@@ -1,6 +1,6 @@
 import { AddCircle, Delete } from "@mui/icons-material";
 import { Button, Paper, Snackbar, Stack, Typography } from "@mui/material";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   CONTAINER_HEIGHT,
   getRootTree,
@@ -18,13 +18,22 @@ import {
   saveComponent,
 } from "../../services";
 import SaveComponent from "./SaveComponent";
+import { useLocation } from "react-router-dom";
 
 export interface Component {
   tree: TreeNode;
   defaultValues: Record<string, DATA_VALUE>;
 }
 
+const useQuery = () => {
+  const { search } = useLocation();
+  return useMemo(() => new URLSearchParams(search), [search]);
+};
+
 const ComponentsExplorer = () => {
+  const query = useQuery();
+  const componentName = query.get("name") || "";
+  const [name, setName] = useState<string>(componentName);
   const [page, setPage] = useState<"list" | "create" | "edit">("list");
   const [snackMessage, setSnackMessage] = useState<SnackMessage | undefined>();
   const [component, setComponent] = useState<Component>({
@@ -33,7 +42,6 @@ const ComponentsExplorer = () => {
   });
   const [list, setList] = useState<string[]>([]);
   const [selected, setSelected] = useState<string[]>([]);
-  const [clickedRow, setClickedRow] = useState<Row>();
 
   const handleSnackClose = (
     e: React.SyntheticEvent | Event,
@@ -46,14 +54,27 @@ const ComponentsExplorer = () => {
   };
 
   const refresh = () => {
-    listComponents(setList, (e) => {});
+    listComponents(setList, (e) => {
+      setList([]);
+    });
   };
+
+  useEffect(() => {
+    readComponent(
+      name,
+      (c) => {
+        setComponent(c);
+        setPage("edit");
+      },
+      () => {}
+    );
+  }, [name]);
 
   useEffect(() => {
     refresh();
   }, []);
 
-  const onSave = (name: string, c: Component) => {
+  const onSave = (c: Component) => {
     let json: any = {};
     let keys: any = {};
     mergeDefaultValues(c.tree, c.defaultValues, json, {}, keys);
@@ -61,28 +82,28 @@ const ComponentsExplorer = () => {
     Object.keys(keys || {}).forEach((k) => {
       sanitizedKeys[k.replace("props", name)] = keys[k];
     });
-    console.log(sanitizedKeys);
-    saveComponent(
-      {
-        ...c,
-        json: json["$"],
-        keys: sanitizedKeys,
-      },
-      name,
-      () => {
-        refresh();
-        setSnackMessage({
-          message: "changes saved",
-          severity: "success",
-        });
-      },
-      (e) => {
-        setSnackMessage({
-          message: e.message,
-          severity: "error",
-        });
-      }
-    );
+    name &&
+      saveComponent(
+        {
+          ...c,
+          json: json["$"],
+          keys: sanitizedKeys,
+        },
+        name,
+        () => {
+          refresh();
+          setSnackMessage({
+            message: "changes saved",
+            severity: "success",
+          });
+        },
+        (e) => {
+          setSnackMessage({
+            message: e.message,
+            severity: "error",
+          });
+        }
+      );
   };
 
   return (
@@ -100,6 +121,7 @@ const ComponentsExplorer = () => {
             <Stack gap={2} direction={"row"}>
               <Button
                 onClick={(e) => {
+                  setName("");
                   setPage("create");
                 }}
                 variant="contained"
@@ -130,7 +152,7 @@ const ComponentsExplorer = () => {
                   r.id,
                   (c) => {
                     setComponent(c);
-                    setClickedRow(r);
+                    setName(r.id);
                     setPage("edit");
                   },
                   () => {}
@@ -153,7 +175,8 @@ const ComponentsExplorer = () => {
         ) : (
           <SaveComponent
             mode={page}
-            name={page === "edit" && clickedRow ? clickedRow.id : ""}
+            name={name}
+            setName={setName}
             component={component}
             onSave={onSave}
             onBack={() => {

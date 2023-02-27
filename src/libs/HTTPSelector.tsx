@@ -1,6 +1,6 @@
-import { Select, MenuItem, Stack, Typography } from "@mui/material";
+import { OpenInNew } from "@mui/icons-material";
+import { Select, MenuItem, Stack, Typography, IconButton } from "@mui/material";
 import { useEffect, useState } from "react";
-import { DATA_SOURCE_TYPE } from "../Constants";
 import { listDatasources } from "../services";
 
 interface HTTPSelectorProps {
@@ -13,12 +13,23 @@ export const HTTPSelector = (props: HTTPSelectorProps) => {
   const [https, setHTTPs] = useState<string[]>([]);
 
   useEffect(() => {
-    listDatasources(DATA_SOURCE_TYPE.HTTP, setHTTPs, () => {});
+    listDatasources("0", setHTTPs, () => {});
   }, []);
 
   return (
     <Stack gap={2}>
-      <Typography>HTTP</Typography>
+      <Stack gap={1} alignItems={"center"} direction={"row"}>
+        <Typography>HTTP</Typography>
+        <IconButton
+          disabled={!props.selectedHTTP}
+          onClick={() => {
+            window.open("/?type=0&service=" + props.selectedHTTP, "_blank");
+          }}
+          size="small"
+        >
+          <OpenInNew />
+        </IconButton>
+      </Stack>
       <Select
         labelId="actions-method-label"
         id="actions-method-select"

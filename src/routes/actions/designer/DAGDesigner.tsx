@@ -111,16 +111,14 @@ const DAGDesigner = (props: DAGDesignerProps) => {
   }, [props.actionName]);
 
   return (
-    <Paper
-      ref={reactFlowWrapper}
-      sx={{ width: "100%", overflow: "auto" }}
-    >
+    <Paper ref={reactFlowWrapper} sx={{ width: "100%", overflow: "auto" }}>
       <ReactFlow
         nodes={props.nodes.map((n: Node) => {
           return {
             ...n,
             data: {
               ...(n.data || {}),
+              action: props.actionName,
               context: getNodeContext(n),
             },
           };

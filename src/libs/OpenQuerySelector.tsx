@@ -1,6 +1,5 @@
 import { Select, MenuItem, Stack, Typography } from "@mui/material";
 import { useEffect, useState } from "react";
-import { DATA_SOURCE_TYPE } from "../Constants";
 import { listDatasources } from "../services";
 
 interface OpenQuerySelectorProps {
@@ -13,7 +12,7 @@ export const OpenQuerySelector = (props: OpenQuerySelectorProps) => {
   const [openQuries, setOpenQueries] = useState<string[]>([]);
 
   useEffect(() => {
-    listDatasources(DATA_SOURCE_TYPE.OPENQUERY, setOpenQueries, () => {});
+    listDatasources("2", setOpenQueries, () => {});
   }, []);
 
   return (

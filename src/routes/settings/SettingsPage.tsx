@@ -12,7 +12,6 @@ import { useEffect, useState } from "react";
 import {
   CONTAINER_HEIGHT,
   Settings,
-  SHRINK_SIZE,
   SnackMessage,
 } from "../../Constants";
 import MuiAlert from "@mui/material/Alert";

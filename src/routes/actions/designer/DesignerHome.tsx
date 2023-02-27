@@ -11,10 +11,13 @@ import { useLocation, useNavigate } from "react-router-dom";
 import DAGDesigner from "./DAGDesigner";
 import BackIcon from "@mui/icons-material/ArrowBack";
 import DesignerTools from "./DesignerTools";
-import { saveAction } from "../../../services";
+import { readApp, saveAction } from "../../../services";
 import { CONTAINER_HEIGHT, SnackMessage } from "../../../Constants";
 import MuiAlert from "@mui/material/Alert";
 import { useNodesState, useEdgesState } from "reactflow";
+import { PlayArrow } from "@mui/icons-material";
+import Save from "@mui/icons-material/Save";
+import { executeAction } from "../executors/ActionExecutor";
 
 const useQuery = () => {
   const { search } = useLocation();
@@ -36,16 +39,21 @@ const DesignerHome = () => {
     setSnackMessage(undefined);
   };
 
-  const save = () => {
+  const save = (onSuccess?: () => void) => {
     if (action) {
       saveAction(
-        { nodes, edges },
+        {
+          nodes,
+          edges,
+        },
         action,
         () => {
-          setSnackMessage({
-            severity: "success",
-            message: "action saved",
-          });
+          onSuccess
+            ? onSuccess()
+            : setSnackMessage({
+                severity: "success",
+                message: "action saved",
+              });
         },
         () => {
           setSnackMessage({
@@ -87,6 +95,7 @@ const DesignerHome = () => {
             </Typography>
             <Typography>{" Nodes: " + nodes.length}</Typography>
             <Button
+              startIcon={<Save />}
               onClick={(e) => {
                 e.stopPropagation();
                 save();
@@ -96,6 +105,25 @@ const DesignerHome = () => {
               variant="contained"
             >
               Save changes
+            </Button>
+            <Button
+              startIcon={<PlayArrow />}
+              onClick={(e) => {
+                e.stopPropagation();
+                save(() => {
+                  readApp(
+                    (app) => {
+                      executeAction(app, [action], "Hello ! Actions");
+                    },
+                    () => {}
+                  );
+                });
+              }}
+              sx={{ zIndex: 1000 }}
+              size="small"
+              variant="contained"
+            >
+              Run
             </Button>
           </Stack>
 

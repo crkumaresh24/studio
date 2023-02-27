@@ -1,4 +1,4 @@
-import { DATA_SOURCE_TYPE } from "./Constants";
+import { App } from "./Constants";
 
 const WEB_FS_URL = "http://localhost:9099";
 const workspace = "/workspace";
@@ -80,7 +80,7 @@ const readStore = (
 
 const saveDatasource = (
   content: any,
-  type: DATA_SOURCE_TYPE,
+  type: string,
   name: string,
   onSuccess: () => void,
   onError: (e: Error) => void
@@ -103,7 +103,7 @@ const saveDatasource = (
 };
 
 const readDatasource = (
-  type: DATA_SOURCE_TYPE,
+  type: string,
   name: string,
   onSuccess: (content: any) => void,
   onError: (e: Error) => void
@@ -123,7 +123,7 @@ const readDatasource = (
 };
 
 const listDatasources = (
-  type: DATA_SOURCE_TYPE,
+  type: string,
   onSuccess: (list: string[]) => void,
   onError: (e: Error) => void
 ) => {
@@ -134,7 +134,7 @@ const listDatasources = (
 };
 
 const removeDatasource = (
-  type: DATA_SOURCE_TYPE,
+  type: string,
   name: string,
   onSuccess: (content: any) => void,
   onError: (e: Error) => void
@@ -246,6 +246,16 @@ const publish = (
     .catch(onError);
 };
 
+const readApp = (
+  onSuccess: (content: App) => void,
+  onError: (e: Error) => void
+) => {
+  fetch(WEB_FS_URL + "/app?workspace=" + workspace)
+    .then((req) => req.json())
+    .then(onSuccess)
+    .catch(onError);
+};
+
 export {
   saveComponent,
   readComponent,
@@ -264,4 +274,5 @@ export {
   saveSettings,
   readSettings,
   publish,
+  readApp,
 };

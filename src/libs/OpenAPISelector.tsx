@@ -1,6 +1,5 @@
 import { Select, MenuItem, Stack, Typography } from "@mui/material";
 import { useEffect, useState } from "react";
-import { DATA_SOURCE_TYPE } from "../Constants";
 import { listDatasources } from "../services";
 
 interface OpenAPISelectorProps {
@@ -13,7 +12,7 @@ export const OpenAPISelector = (props: OpenAPISelectorProps) => {
   const [openAPIs, setOpenAPIs] = useState<string[]>([]);
 
   useEffect(() => {
-    listDatasources(DATA_SOURCE_TYPE.OPENAPI, setOpenAPIs, () => {});
+    listDatasources("1", setOpenAPIs, () => {});
   }, []);
 
   return (

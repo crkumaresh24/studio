@@ -18,6 +18,7 @@ export const getHTTPPropsFromOpenAPI = (
   store: any,
   datasource: DataSource
 ): HTTPProps => {
+  console.log(store);
   const { url, method } = datasource.props.schema;
   const headerJSON = {
     header: {

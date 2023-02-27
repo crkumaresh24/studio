@@ -1,15 +1,47 @@
 import { Paper, Stack } from "@mui/material";
-import React, { useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
+import { useLocation } from "react-router-dom";
 import { StyledTab, StyledTabs } from "../../App";
-import { CONTAINER_HEIGHT, DATA_SOURCE_TYPE } from "../../Constants";
-import DatasourceExplorer from "./DatasourceExplorer";
+import { CONTAINER_HEIGHT } from "../../Constants";
+import { readDatasource } from "../../services";
+import DatasourceExplorer, { DataSource } from "./DatasourceExplorer";
+
+const useQuery = () => {
+  const { search } = useLocation();
+  return useMemo(() => new URLSearchParams(search), [search]);
+};
 
 const DatasourceExplorerHome = () => {
-  const [value, setValue] = useState(0);
+  const query = useQuery();
+  const type = query.get("type") || "0";
+  const service = query.get("service") || "";
+  const [name, setName] = useState<string>(service);
+  const [value, setValue] = useState(Number(type));
+  const [page, setPage] = useState<"list" | "create" | "edit">("list");
+  const [datasource, setDatasource] = useState<DataSource>({
+    type: "0",
+    props: {},
+  });
 
-  const handleChange = (event: React.SyntheticEvent, newValue: number) => {
+  const handleChange = (e: React.SyntheticEvent, newValue: number) => {
     setValue(newValue);
+    setPage("list");
   };
+
+  useEffect(() => {
+    service &&
+      type &&
+      readDatasource(
+        String(type),
+        service,
+        (d) => {
+          setDatasource(d);
+          setPage("edit");
+        },
+        () => {}
+      );
+  }, [service, type]);
+
   return (
     <Paper
       sx={{
@@ -31,13 +63,15 @@ const DatasourceExplorerHome = () => {
         </StyledTabs>
 
         <Stack padding={1}>
-          {value === 0 && <DatasourceExplorer type={DATA_SOURCE_TYPE.HTTP} />}
-          {value === 1 && (
-            <DatasourceExplorer type={DATA_SOURCE_TYPE.OPENAPI} />
-          )}
-          {value === 2 && (
-            <DatasourceExplorer type={DATA_SOURCE_TYPE.OPENQUERY} />
-          )}
+          <DatasourceExplorer
+            page={page}
+            setPage={setPage}
+            datasource={datasource}
+            setDatasource={setDatasource}
+            name={name}
+            setName={setName}
+            type={String(value)}
+          />
         </Stack>
       </Stack>
     </Paper>

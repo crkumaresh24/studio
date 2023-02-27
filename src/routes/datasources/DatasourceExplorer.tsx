@@ -2,7 +2,7 @@ import { AddCircle, Delete } from "@mui/icons-material";
 import { Button, Snackbar, Stack, Typography } from "@mui/material";
 import MuiAlert from "@mui/material/Alert";
 import { useEffect, useState } from "react";
-import { DATA_SOURCE_TYPE, SnackMessage } from "../../Constants";
+import { SnackMessage } from "../../Constants";
 import Explorer, { Action, Row } from "../../libs/Explorer";
 import {
   listDatasources,
@@ -13,28 +13,24 @@ import {
 import SaveDatasource from "./SaveDataSource";
 
 export interface DataSource {
-  type: DATA_SOURCE_TYPE;
+  type: string;
   props: any;
 }
 
 interface DatasourceExplorerProps {
-  type: DATA_SOURCE_TYPE;
+  name: string;
+  setName: (name: string) => void;
+  type: string;
+  page: "list" | "create" | "edit";
+  setPage: (page: "list" | "create" | "edit") => void;
+  datasource: DataSource;
+  setDatasource: (datasource: DataSource) => void;
 }
 
 const DatasourceExplorer = (props: DatasourceExplorerProps) => {
-  const [page, setPage] = useState<"list" | "create" | "edit">("list");
   const [snackMessage, setSnackMessage] = useState<SnackMessage | undefined>();
-  const [datasource, setDatasource] = useState<DataSource>({
-    type: props.type,
-    props: {},
-  });
   const [list, setList] = useState<string[]>([]);
   const [selected, setSelected] = useState<string[]>([]);
-  const [clickedRow, setClickedRow] = useState<Row>();
-
-  const refresh = () => {
-    listDatasources(props.type, setList, (e) => {});
-  };
 
   const handleSnackClose = (
     e: React.SyntheticEvent | Event,
@@ -46,9 +42,15 @@ const DatasourceExplorer = (props: DatasourceExplorerProps) => {
     setSnackMessage(undefined);
   };
 
+  const refresh = () => {
+    listDatasources(props.type, setList, (e) => {
+      setList([]);
+    });
+  };
+
   useEffect(() => {
     refresh();
-  }, []);
+  }, [props.type]);
 
   const onSave = (name: string, d: DataSource) => {
     saveDatasource(
@@ -90,16 +92,16 @@ const DatasourceExplorer = (props: DatasourceExplorerProps) => {
 
   return (
     <Stack padding={1}>
-      {page === "list" ? (
+      {props.page === "list" ? (
         <Stack gap={3}>
           <Stack gap={2} direction={"row"}>
             <Button
               onClick={(e) => {
-                setDatasource({
+                props.setDatasource({
                   type: props.type,
                   props: {},
                 });
-                setPage("create");
+                props.setPage("create");
               }}
               startIcon={<AddCircle />}
               variant="contained"
@@ -129,9 +131,9 @@ const DatasourceExplorer = (props: DatasourceExplorerProps) => {
                 props.type,
                 r.id,
                 (d) => {
-                  setDatasource(d);
-                  setClickedRow(r);
-                  setPage("edit");
+                  props.setPage("edit");
+                  props.setDatasource(d);
+                  props.setName(r.id);
                 },
                 () => {}
               );
@@ -152,12 +154,12 @@ const DatasourceExplorer = (props: DatasourceExplorerProps) => {
         </Stack>
       ) : (
         <SaveDatasource
-          name={page === "edit" && clickedRow ? clickedRow.id : ""}
-          mode={page}
-          datasource={datasource}
+          name={props.page === "edit" ? props.name : ""}
+          mode={props.page}
+          datasource={props.datasource}
           onBack={() => {
             refresh();
-            setPage("list");
+            props.setPage("list");
           }}
           onSave={onSave}
         />

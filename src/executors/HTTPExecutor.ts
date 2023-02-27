@@ -24,12 +24,10 @@ export const getHTTPProps = (store: any, datasource: DataSource): HTTPProps => {
     pathsTree,
   } = datasource.props;
 
-  console.log(store);
-
   let body: any = {},
     headers: any = {},
     pathParams: any = {},
-    queryParams: any = {};  
+    queryParams: any = {};
 
   if (method === "post" && bodyTree && bodyDefaultValues) {
     mergeDefaultValues(bodyTree, bodyDefaultValues, body, store);
@@ -43,8 +41,6 @@ export const getHTTPProps = (store: any, datasource: DataSource): HTTPProps => {
   if (pathsTree && pathsDefaultValues) {
     mergeDefaultValues(pathsTree, pathsDefaultValues, pathParams, store);
   }
-
-  console.log(paramsDefaultValues);
 
   return {
     url,

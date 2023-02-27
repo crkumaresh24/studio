@@ -14,7 +14,7 @@ import { DataSource } from "./DatasourceExplorer";
 import HTTPDataSource from "./http/HTTPDataSource";
 import OpenAPIDataSource from "./openapi/OpenAPIDataSource";
 import { useEffect, useState } from "react";
-import { DATA_SOURCE_TYPE, Settings } from "../../Constants";
+import { Settings } from "../../Constants";
 import { PlayArrow } from "@mui/icons-material";
 import { executeOpenAPI } from "../../executors/OpenAPIExecutor";
 import { readSettings, readStore } from "../../services";
@@ -89,10 +89,7 @@ const SaveDatasource = (props: SaveDatasourceProps) => {
           onClick={() => {
             readStore(
               (store) => {
-                if (
-                  datasource.type.toString() ===
-                  DATA_SOURCE_TYPE.OPENAPI.toString()
-                ) {
+                if (datasource.type === "1") {
                   settings &&
                     executeOpenAPI(
                       datasource,
@@ -100,15 +97,9 @@ const SaveDatasource = (props: SaveDatasourceProps) => {
                       onRunResponse,
                       onRunError
                     );
-                } else if (
-                  datasource.type.toString() ===
-                  DATA_SOURCE_TYPE.HTTP.toString()
-                ) {
+                } else if (datasource.type === "0") {
                   executeHTTP(datasource, store, onRunResponse, onRunError);
-                } else if (
-                  datasource.type.toString() ===
-                  DATA_SOURCE_TYPE.OPENQUERY.toString()
-                ) {
+                } else if (datasource.type === "3") {
                   executeOpenQuery(
                     datasource,
                     store,
@@ -138,34 +129,29 @@ const SaveDatasource = (props: SaveDatasourceProps) => {
           onChange={(e) => setName(e.target.value)}
         />
       )}
-      {props.datasource.type.toString() ===
-        DATA_SOURCE_TYPE.OPENQUERY.toString() &&
-        settings && (
-          <OpenQueryDataSource
-            onChange={(props) => setDatasource({ ...datasource, props })}
-            mode={props.mode}
-            {...datasource.props}
-            settings={settings}
-          />
-        )}
-      {props.datasource.type.toString() ===
-        DATA_SOURCE_TYPE.HTTP.toString() && (
+      {props.datasource.type === "2" && settings && (
+        <OpenQueryDataSource
+          onChange={(props) => setDatasource({ ...datasource, props })}
+          mode={props.mode}
+          {...datasource.props}
+          settings={settings}
+        />
+      )}
+      {props.datasource.type === "0" && (
         <HTTPDataSource
           onChange={(props) => setDatasource({ ...datasource, props })}
           mode={props.mode}
           {...datasource.props}
         />
       )}
-      {props.datasource.type.toString() ===
-        DATA_SOURCE_TYPE.OPENAPI.toString() &&
-        settings && (
-          <OpenAPIDataSource
-            onChange={(props) => setDatasource({ ...datasource, props })}
-            {...datasource.props}
-            mode={props.mode}
-            settings={settings}
-          />
-        )}
+      {props.datasource.type === "1" && settings && (
+        <OpenAPIDataSource
+          onChange={(props) => setDatasource({ ...datasource, props })}
+          {...datasource.props}
+          mode={props.mode}
+          settings={settings}
+        />
+      )}
 
       <Drawer
         anchor={"bottom"}

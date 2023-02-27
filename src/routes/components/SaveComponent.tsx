@@ -14,13 +14,13 @@ import { Component } from "./ComponentsExplorer";
 interface SaveComponentProps {
   mode: "create" | "edit" | "list";
   name: string;
+  setName: (name: string) => void;
   component: Component;
-  onSave: (name: string, component: Component) => void;
+  onSave: (component: Component) => void;
   onBack: () => void;
 }
 
 const SaveComponent = (props: SaveComponentProps) => {
-  const [name, setName] = useState<string>(props.name);
   const [component, setComponent] = useState<Component>(props.component);
   const [selectedPath, setSelectedPath] = useState<string>("");
   return (
@@ -34,7 +34,7 @@ const SaveComponent = (props: SaveComponentProps) => {
         </Typography>
         <Button
           onClick={(e) => {
-            props.onSave(name, component);
+            props.onSave(component);
           }}
           startIcon={<SaveIcon />}
           size="small"
@@ -49,8 +49,8 @@ const SaveComponent = (props: SaveComponentProps) => {
           label={"Component Name"}
           placeholder={"component name"}
           variant="outlined"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
+          value={props.name}
+          onChange={(e) => props.setName(e.target.value)}
         />
       )}
       <PayloadMapper

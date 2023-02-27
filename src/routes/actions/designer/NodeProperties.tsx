@@ -17,10 +17,7 @@ import OpenAPISelector from "../../../libs/OpenAPISelector";
 import OpenQuerySelector from "../../../libs/OpenQuerySelector";
 import StoreSelector from "../../../libs/StoreSelector";
 import StringListAddition from "../../../libs/StringListAddition";
-import ValueAssigner, {
-  DATA_TYPE,
-  DATA_VALUE,
-} from "../../../libs/ValueAssigner";
+import ValueAssigner, { DATA_TYPE } from "../../../libs/ValueAssigner";
 
 interface BaseNodePropertiesProps {
   actionName: string;
@@ -117,6 +114,19 @@ interface NodeAttibute {
 }
 
 const NodeProperties = (props: BaseNodePropertiesProps) => {
+  const setNodeProp = (key: string, value?: any) => {
+    props.onNodeChange({
+      ...props.node,
+      data: {
+        ...(props.node.data || {}),
+        props: {
+          ...(props.node.data.props || {}),
+          [key]: value,
+        },
+      },
+    });
+  };
+
   return (
     <Stack gap={2} padding={2}>
       <TextAttribute
@@ -133,27 +143,9 @@ const NodeProperties = (props: BaseNodePropertiesProps) => {
               label={nodeAttribute.label}
               rows={nodeAttribute.rows}
               showCopyClipboard={nodeAttribute.enableCopyclipboard}
-              value={
-                props.node.data[nodeAttribute.prop] || props.node.data.value
-              }
+              value={props.node.data.props[nodeAttribute.prop || "value"]}
               onValueChange={(value) => {
-                if (nodeAttribute.prop) {
-                  props.onNodeChange({
-                    ...props.node,
-                    data: {
-                      ...props.node.data,
-                      [nodeAttribute.prop]: value,
-                    },
-                  });
-                } else {
-                  props.onNodeChange({
-                    ...props.node,
-                    data: {
-                      ...props.node.data,
-                      value,
-                    },
-                  });
-                }
+                setNodeProp(nodeAttribute.prop || "value", value);
               }}
             />
           );
@@ -166,27 +158,9 @@ const NodeProperties = (props: BaseNodePropertiesProps) => {
               type="number"
               rows={nodeAttribute.rows}
               showCopyClipboard={nodeAttribute.enableCopyclipboard}
-              value={
-                props.node.data[nodeAttribute.prop] || props.node.data.value
-              }
+              value={props.node.data.props[nodeAttribute.prop || "value"]}
               onValueChange={(value) => {
-                if (nodeAttribute.prop) {
-                  props.onNodeChange({
-                    ...props.node,
-                    data: {
-                      ...props.node.data,
-                      [nodeAttribute.prop]: value,
-                    },
-                  });
-                } else {
-                  props.onNodeChange({
-                    ...props.node,
-                    data: {
-                      ...props.node.data,
-                      value,
-                    },
-                  });
-                }
+                setNodeProp(nodeAttribute.prop || "value", value);
               }}
             />
           );
@@ -197,27 +171,9 @@ const NodeProperties = (props: BaseNodePropertiesProps) => {
               sx={{ alignItems: "flex-start", margin: 0 }}
               control={
                 <Switch
-                  checked={
-                    props.node.data[nodeAttribute.prop] || props.node.data.value
-                  }
+                  checked={props.node.data.props[nodeAttribute.prop || "value"]}
                   onChange={(e, value) => {
-                    if (nodeAttribute.prop) {
-                      props.onNodeChange({
-                        ...props.node,
-                        data: {
-                          ...props.node.data,
-                          [nodeAttribute.prop]: value,
-                        },
-                      });
-                    } else {
-                      props.onNodeChange({
-                        ...props.node,
-                        data: {
-                          ...props.node.data,
-                          value,
-                        },
-                      });
-                    }
+                    setNodeProp(nodeAttribute.prop || "value", value);
                   }}
                 />
               }
@@ -229,26 +185,20 @@ const NodeProperties = (props: BaseNodePropertiesProps) => {
         if (nodeAttribute.type === "constant") {
           return (
             <ConstantValueAddition
-              isConstant={
-                (props.node.data[nodeAttribute.prop] || {}).isConstant || false
-              }
+              key={props.node.id}
               value={
-                (props.node.data[nodeAttribute.prop] || {}).value || {
+                props.node.data.props[nodeAttribute.prop || "value"] || {
                   type: "string",
                   value: "",
                 }
               }
+              isConstant={
+                props.node.data.props[nodeAttribute.prop || "isConstant"] ||
+                false
+              }
               onChange={(isConstant, value) => {
-                props.onNodeChange({
-                  ...props.node,
-                  data: {
-                    ...props.node.data,
-                    [nodeAttribute.prop]: {
-                      isConstant,
-                      value,
-                    },
-                  },
-                });
+                setNodeProp(nodeAttribute.prop || "isConstant", isConstant);
+                setNodeProp(nodeAttribute.prop || "value", value);
               }}
             />
           );
@@ -259,27 +209,9 @@ const NodeProperties = (props: BaseNodePropertiesProps) => {
               key={props.node.id}
               label={nodeAttribute.label}
               showCopyClipboard={nodeAttribute.enableCopyclipboard}
-              value={
-                props.node.data[nodeAttribute.prop] || props.node.data.value
-              }
+              value={props.node.data.props[nodeAttribute.prop || "value"]}
               onValueChange={(value) => {
-                if (nodeAttribute.prop) {
-                  props.onNodeChange({
-                    ...props.node,
-                    data: {
-                      ...props.node.data,
-                      [nodeAttribute.prop]: value,
-                    },
-                  });
-                } else {
-                  props.onNodeChange({
-                    ...props.node,
-                    data: {
-                      ...props.node.data,
-                      value,
-                    },
-                  });
-                }
+                setNodeProp(nodeAttribute.prop || "value", value);
               }}
             />
           );
@@ -289,15 +221,11 @@ const NodeProperties = (props: BaseNodePropertiesProps) => {
             <ActionsSelector
               key={props.node.id}
               excludes={[props.actionName]}
-              selectedAction={props.node.data.value}
+              selectedAction={
+                props.node.data.props[nodeAttribute.prop || "value"]
+              }
               onSelect={(value: string) => {
-                props.onNodeChange({
-                  ...props.node,
-                  data: {
-                    ...props.node.data,
-                    value,
-                  },
-                });
+                setNodeProp(nodeAttribute.prop || "value", value);
               }}
             />
           );
@@ -306,15 +234,11 @@ const NodeProperties = (props: BaseNodePropertiesProps) => {
           return (
             <HTTPSelector
               key={props.node.id}
-              selectedHTTP={props.node.data.value}
+              selectedHTTP={
+                props.node.data.props[nodeAttribute.prop || "value"]
+              }
               onSelect={(value: string) => {
-                props.onNodeChange({
-                  ...props.node,
-                  data: {
-                    ...props.node.data,
-                    value,
-                  },
-                });
+                setNodeProp(nodeAttribute.prop || "value", value);
               }}
             />
           );
@@ -323,15 +247,11 @@ const NodeProperties = (props: BaseNodePropertiesProps) => {
           return (
             <OpenAPISelector
               key={props.node.id}
-              selectedOpenAPI={props.node.data.value}
+              selectedOpenAPI={
+                props.node.data.props[nodeAttribute.prop || "value"]
+              }
               onSelect={(value: string) => {
-                props.onNodeChange({
-                  ...props.node,
-                  data: {
-                    ...props.node.data,
-                    value,
-                  },
-                });
+                setNodeProp(nodeAttribute.prop || "value", value);
               }}
             />
           );
@@ -340,15 +260,11 @@ const NodeProperties = (props: BaseNodePropertiesProps) => {
           return (
             <OpenQuerySelector
               key={props.node.id}
-              selectedOpenQuery={props.node.data.value}
+              selectedOpenQuery={
+                props.node.data.props[nodeAttribute.prop || "value"]
+              }
               onSelect={(value: string) => {
-                props.onNodeChange({
-                  ...props.node,
-                  data: {
-                    ...props.node.data,
-                    value,
-                  },
-                });
+                setNodeProp(nodeAttribute.prop || "value", value);
               }}
             />
           );
@@ -357,27 +273,9 @@ const NodeProperties = (props: BaseNodePropertiesProps) => {
           return (
             <StringListAddition
               title={nodeAttribute.label}
-              list={
-                props.node.data[nodeAttribute.prop] || props.node.data.value
-              }
+              list={props.node.data.props[nodeAttribute.prop || "value"]}
               onListChange={(value) => {
-                if (nodeAttribute.prop) {
-                  props.onNodeChange({
-                    ...props.node,
-                    data: {
-                      ...props.node.data,
-                      [nodeAttribute.prop]: value,
-                    },
-                  });
-                } else {
-                  props.onNodeChange({
-                    ...props.node,
-                    data: {
-                      ...props.node.data,
-                      value,
-                    },
-                  });
-                }
+                setNodeProp(nodeAttribute.prop || "value", value);
               }}
             />
           );
@@ -390,27 +288,9 @@ const NodeProperties = (props: BaseNodePropertiesProps) => {
                 row
                 aria-labelledby="sortType-value-selection"
                 name="sortType-value-selection-group"
-                value={
-                  props.node.data[nodeAttribute.prop] || props.node.data.value
-                }
+                value={props.node.data.props[nodeAttribute.prop || "value"]}
                 onChange={(e, value) => {
-                  if (nodeAttribute.prop) {
-                    props.onNodeChange({
-                      ...props.node,
-                      data: {
-                        ...props.node.data,
-                        [nodeAttribute.prop]: value,
-                      },
-                    });
-                  } else {
-                    props.onNodeChange({
-                      ...props.node,
-                      data: {
-                        ...props.node.data,
-                        value,
-                      },
-                    });
-                  }
+                  setNodeProp(nodeAttribute.prop || "value", value);
                 }}
               >
                 <FormControlLabel value="asc" control={<Radio />} label="Asc" />
@@ -429,27 +309,13 @@ const NodeProperties = (props: BaseNodePropertiesProps) => {
               <Typography variant="subtitle1">Value</Typography>
               <ValueAssigner
                 data={
-                  props.node.data[nodeAttribute.prop] ||
-                  props.node.data.value || { type: "string", value: "" }
+                  props.node.data.props[nodeAttribute.prop || "value"] || {
+                    type: "string",
+                    value: "",
+                  }
                 }
                 onDataChange={(value) => {
-                  if (nodeAttribute.prop) {
-                    props.onNodeChange({
-                      ...props.node,
-                      data: {
-                        ...props.node.data,
-                        [nodeAttribute.prop]: value,
-                      },
-                    });
-                  } else {
-                    props.onNodeChange({
-                      ...props.node,
-                      data: {
-                        ...props.node.data,
-                        value,
-                      },
-                    });
-                  }
+                  setNodeProp(nodeAttribute.prop || "value", value);
                 }}
                 requiredTypes={
                   nodeAttribute.requiredTypes || [

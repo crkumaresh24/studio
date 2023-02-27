@@ -4,6 +4,13 @@ import { DATA_TYPE } from "./libs/ValueAssigner";
 export const SHRINK_SIZE = "72%";
 export const CONTAINER_HEIGHT = "calc(100vh - 80px)";
 
+export interface App {
+  nodes: any[];
+  store: any;
+  settings: Settings;
+  services: any;
+}
+
 export interface HTTPProps {
   url: string;
   method: string;
@@ -18,12 +25,6 @@ export interface Settings {
   buildPaths: string[];
   apis: KeyValueEntry[];
   queries: KeyValueEntry[];
-}
-
-export enum DATA_SOURCE_TYPE {
-  OPENQUERY,
-  OPENAPI,
-  HTTP,
 }
 
 export interface DATA_VALUE {
