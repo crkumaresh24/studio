@@ -1,9 +1,10 @@
-import { MenuItem, Select, Typography } from "@mui/material";
+import { IconButton, MenuItem, Select, Typography } from "@mui/material";
 import { Stack } from "@mui/system";
 import { useEffect, useState } from "react";
 import { listComponents, readComponent } from "../services";
 import { DATA_VALUE } from "./ValueAssigner";
 import PayloadMapper, { TreeNode } from "./PayloadMapper";
+import { OpenInNew } from "@mui/icons-material";
 
 export interface Store {
   tree: TreeNode;
@@ -40,7 +41,18 @@ const StoreSelector = (props: StoreSelectorProps) => {
 
   return (
     <Stack gap={2}>
-      <Typography>{"Component"}</Typography>
+      <Stack gap={1} alignItems={"center"} direction={"row"}>
+        <Typography>Component</Typography>
+        <IconButton
+          disabled={!props.name}
+          onClick={() => {
+            window.open("/components?name=" + props.name, "_blank");
+          }}
+          size="small"
+        >
+          <OpenInNew />
+        </IconButton>
+      </Stack>
       <Select
         labelId="component-slector"
         id="component-slector-id"

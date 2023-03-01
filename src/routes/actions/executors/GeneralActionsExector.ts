@@ -5,7 +5,8 @@ const startAction = (context: ActionContext) => {
 };
 
 const logAction = (context: ActionContext) => {
-  console.log(context.value);
+  console.log(context.value)
+  context.log && context.log(context.value);
 };
 
 export const general = {

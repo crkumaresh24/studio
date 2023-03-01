@@ -1,11 +1,13 @@
+import { Refresh } from "@mui/icons-material";
 import {
-  Box,
   FormControlLabel,
+  IconButton,
   Radio,
   RadioGroup,
+  Stack,
   TextField,
 } from "@mui/material";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import JsonEditor from "./JsonEditor";
 import StoreSelector from "./StoreSelector";
 
@@ -38,6 +40,7 @@ interface ValueAssignerProps {
 
 const ValueAssigner = (props: ValueAssignerProps) => {
   let changedContent: any | undefined;
+  const [refershTime, setRefreshTime] = useState(new Date().getTime());
   const handleTypeChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const type = (event.target as HTMLInputElement).value as DATA_TYPE;
     type === "boolean"
@@ -83,7 +86,7 @@ const ValueAssigner = (props: ValueAssignerProps) => {
   };
 
   return (
-    <Box gap={3} sx={{ display: "flex", flexDirection: "column" }}>
+    <Stack key={refershTime} gap={3}>
       <RadioGroup
         row
         aria-labelledby="value-selection"
@@ -91,6 +94,15 @@ const ValueAssigner = (props: ValueAssignerProps) => {
         value={type}
         onChange={handleTypeChange}
       >
+        <IconButton
+          sx={{ marginRight: 2 }}
+          onClick={() => {
+            setRefreshTime(new Date().getTime());
+          }}
+          size="small"
+        >
+          <Refresh />
+        </IconButton>
         {props.requiredTypes.includes("json") && (
           <FormControlLabel value="json" control={<Radio />} label="JSON" />
         )}
@@ -190,7 +202,7 @@ const ValueAssigner = (props: ValueAssignerProps) => {
           }}
         />
       )}
-    </Box>
+    </Stack>
   );
 };
 

@@ -1,5 +1,6 @@
 import {
   Button,
+  Drawer,
   IconButton,
   Paper,
   Snackbar,
@@ -18,11 +19,14 @@ import { useNodesState, useEdgesState } from "reactflow";
 import { PlayArrow } from "@mui/icons-material";
 import Save from "@mui/icons-material/Save";
 import { executeAction } from "../executors/ActionExecutor";
+import ActionRunReponse from "../ActionRunResponse";
 
 const useQuery = () => {
   const { search } = useLocation();
   return useMemo(() => new URLSearchParams(search), [search]);
 };
+
+let logs: string[] = [];
 
 const DesignerHome = () => {
   const navigate = useNavigate();
@@ -30,6 +34,9 @@ const DesignerHome = () => {
   const action = query.get("action");
   const [nodes, setNodes, onNodesChange] = useNodesState([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState([]);
+  const [responseRefreshTime, setResponseRefreshTime] = useState<
+    number | undefined
+  >(undefined);
   const [snackMessage, setSnackMessage] = useState<SnackMessage | undefined>();
 
   const handleClose = (e: React.SyntheticEvent | Event, reason?: string) => {
@@ -63,6 +70,11 @@ const DesignerHome = () => {
         }
       );
     }
+  };
+
+  const log = (log: string) => {
+    logs.push(log);
+    setResponseRefreshTime(new Date().getTime());
   };
 
   return (
@@ -110,10 +122,11 @@ const DesignerHome = () => {
               startIcon={<PlayArrow />}
               onClick={(e) => {
                 e.stopPropagation();
+                logs = [];
                 save(() => {
                   readApp(
                     (app) => {
-                      executeAction(app, [action], "Hello ! Actions");
+                      executeAction(app, [action], "Hello ! Actions", log);
                     },
                     () => {}
                   );
@@ -160,6 +173,22 @@ const DesignerHome = () => {
           </MuiAlert>
         </Snackbar>
       )}
+      <Drawer
+        anchor={"bottom"}
+        open={responseRefreshTime !== undefined}
+        onClose={() => {
+          logs = [];
+          setResponseRefreshTime(undefined);
+        }}
+      >
+        {responseRefreshTime && (
+          <ActionRunReponse
+            key={responseRefreshTime}
+            store={undefined}
+            logs={logs}
+          />
+        )}
+      </Drawer>
     </Paper>
   );
 };

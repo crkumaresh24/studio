@@ -29,6 +29,7 @@ const CreateAction = (props: CreateActionProps) => {
         </Button>
       </Box>
       <TextField
+        autoFocus
         variant="outlined"
         label="Name"
         placeholder="actio name"
