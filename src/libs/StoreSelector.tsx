@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { listComponents, readComponent } from "../services";
 import { DATA_VALUE } from "./ValueAssigner";
 import PayloadMapper, { TreeNode } from "./PayloadMapper";
-import { OpenInNew } from "@mui/icons-material";
+import { OpenInNew, Refresh } from "@mui/icons-material";
 
 export interface Store {
   tree: TreeNode;
@@ -26,8 +26,7 @@ const StoreSelector = (props: StoreSelectorProps) => {
     listComponents(setContainers, () => {});
   };
 
-  useEffect(() => {
-    refreshContainers();
+  const refreshProps = () => {
     if (props.name) {
       readComponent(
         props.name,
@@ -37,6 +36,11 @@ const StoreSelector = (props: StoreSelectorProps) => {
         () => {}
       );
     }
+  };
+
+  useEffect(() => {
+    refreshContainers();
+    refreshProps();
   }, [props.name]);
 
   return (
@@ -76,7 +80,18 @@ const StoreSelector = (props: StoreSelectorProps) => {
           </MenuItem>
         ))}
       </Select>
-      <Typography>{"Property"}</Typography>
+      <Stack gap={1} alignItems={"center"} direction={"row"}>
+        <Typography>Property</Typography>
+        <IconButton
+          sx={{ marginRight: 2 }}
+          onClick={() => {
+            refreshProps();
+          }}
+          size="small"
+        >
+          <Refresh />
+        </IconButton>
+      </Stack>
       <Stack padding={1} minHeight={200} sx={{ border: "1px solid dimgrey" }}>
         {tree && props.name && (
           <PayloadMapper

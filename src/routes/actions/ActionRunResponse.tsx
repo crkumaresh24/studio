@@ -40,7 +40,7 @@ const ActionRunReponse = (props: ActionRunResponseProps) => {
         <Stack padding={1}>
           <Paper sx={{ padding: 1 }}>
             {props.logs.map((log) => {
-              return <Typography marginBottom={1}>{log}</Typography>;
+              return <Typography padding={1} borderBottom={1}>{log}</Typography>;
             })}
           </Paper>
         </Stack>

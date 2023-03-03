@@ -7,9 +7,7 @@ import { executeOpenAPI } from "../../../executors/OpenAPIExecutor";
 import { executeHTTP } from "../../../executors/HTTPExecutor";
 
 const callHTTPAction = (context: ActionContext) => {
-  console.log(context.services);
   const datasource = (context.services[0] || {})[context.props.value];
-  console.log(datasource);
   if (datasource) {
     executeHTTP(
       datasource,

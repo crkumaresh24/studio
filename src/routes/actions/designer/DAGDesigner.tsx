@@ -124,7 +124,6 @@ const DAGDesigner = (props: DAGDesignerProps) => {
           };
         })}
         onNodeClick={(e, node) => {
-          console.log(node);
           setSelectedNode(node);
           setOpenProperties(true);
         }}

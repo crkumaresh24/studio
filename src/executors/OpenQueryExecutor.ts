@@ -15,7 +15,6 @@ export const executeOpenQuery = (
     url = (
       settings.queries.filter((q: KeyValueEntry) => q.key === queryId)[0] || {}
     ).value;
-    console.log(url);
   }
   if (url) {
     mergeDefaultValues(tree, defaultValues, queryVars, store);

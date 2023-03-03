@@ -78,7 +78,6 @@ export const executeHTTPCall = (
   onResponse: (text: string) => void,
   onError: (status: number, statusText: string, e: string) => void
 ) => {
-  console.log(props);
   const method = props.method || "get";
   let modifiedURL = props.url;
 

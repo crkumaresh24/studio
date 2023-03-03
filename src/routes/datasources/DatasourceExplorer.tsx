@@ -1,12 +1,23 @@
 import { AddCircle, Delete } from "@mui/icons-material";
-import { Button, Snackbar, Stack, Typography } from "@mui/material";
+import {
+  Box,
+  Button,
+  Drawer,
+  Snackbar,
+  Stack,
+  Typography,
+} from "@mui/material";
 import MuiAlert from "@mui/material/Alert";
 import { useEffect, useState } from "react";
 import { SnackMessage } from "../../Constants";
+import { executeHTTP } from "../../executors/HTTPExecutor";
+import { executeOpenAPI } from "../../executors/OpenAPIExecutor";
 import Explorer, { Action, Row } from "../../libs/Explorer";
+import JsonEditor from "../../libs/JsonEditor";
 import {
   listDatasources,
   readDatasource,
+  readStore,
   removeDatasource,
   saveDatasource,
 } from "../../services";
@@ -31,6 +42,8 @@ const DatasourceExplorer = (props: DatasourceExplorerProps) => {
   const [snackMessage, setSnackMessage] = useState<SnackMessage | undefined>();
   const [list, setList] = useState<string[]>([]);
   const [selected, setSelected] = useState<string[]>([]);
+  const [showRes, setShowRes] = useState<boolean>(false);
+  const [output, setOutput] = useState<any>("");
 
   const handleSnackClose = (
     e: React.SyntheticEvent | Event,
@@ -78,6 +91,32 @@ const DatasourceExplorer = (props: DatasourceExplorerProps) => {
         });
       }
     );
+  };
+
+  const onRunResponse = (response: string) => {
+    let out = response;
+    try {
+      out = JSON.parse(out);
+    } catch (e) {}
+    setOutput(out);
+    setShowRes(true);
+  };
+
+  const onRunError = (
+    statusCode: number,
+    statusText: string,
+    response: string
+  ) => {
+    let out = response;
+    try {
+      out = JSON.parse(out);
+    } catch (e) {}
+    if (out) {
+      setOutput(out);
+    } else {
+      setOutput(statusCode + " - " + statusText);
+    }
+    setShowRes(true);
   };
 
   const getType = () => {
@@ -138,12 +177,44 @@ const DatasourceExplorer = (props: DatasourceExplorerProps) => {
                 () => {}
               );
             }}
+            secondaryExpanded
             secondaryActions={[
+              { id: "run", title: "Run", startIcon: "play" },
               { id: "delete", title: "Delete", startIcon: "delete" },
             ]}
             onSecondaryAction={(row: Row, action: Action) => {
+              console.log(action);
               if (action.id === "delete") {
                 removeDatasource(props.type, row.id, refresh, () => {});
+              } else if (action.id === "run") {
+                readDatasource(
+                  props.type,
+                  row.id,
+                  (datasource) => {
+                    readStore(
+                      (store) => {
+                        if (datasource.type === "1") {
+                          executeOpenAPI(
+                            datasource,
+                            store,
+                            onRunResponse,
+                            onRunError
+                          );
+                        } else if (datasource.type === "0") {
+                          executeHTTP(
+                            datasource,
+                            store,
+                            onRunResponse,
+                            onRunError
+                          );
+                        } else if (datasource.type === "3") {
+                        }
+                      },
+                      () => {}
+                    );
+                  },
+                  () => {}
+                );
               }
             }}
             rows={list.map((c) => ({
@@ -176,6 +247,26 @@ const DatasourceExplorer = (props: DatasourceExplorerProps) => {
           </MuiAlert>
         </Snackbar>
       )}
+      <Drawer
+        anchor={"bottom"}
+        open={showRes}
+        onClose={() => {
+          setShowRes(false);
+        }}
+      >
+        <Box padding={2} sx={{ minHeight: 500 }}>
+          <div className="jse-theme-dark">
+            <JsonEditor
+              className={"json-output"}
+              mode={"text"}
+              content={{
+                json: output || {},
+              }}
+              readOnly={true}
+            />
+          </div>
+        </Box>
+      </Drawer>
     </Stack>
   );
 };

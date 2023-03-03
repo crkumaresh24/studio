@@ -83,6 +83,7 @@ const ActionsExplorer = () => {
               rows={list.map((c) => ({
                 id: c,
                 title: c,
+                subTitle: "action"
               }))}
             />
           </Box>

@@ -15,18 +15,28 @@ import {
   Stack,
   TextField,
   Divider,
+  Card,
+  CardContent,
+  CardActions,
 } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import FileCopyIcon from "@mui/icons-material/FileCopy";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import React, { useState } from "react";
-import { DeleteOutline, DesignServices } from "@mui/icons-material";
+import {
+  Dashboard,
+  DeleteOutline,
+  DesignServices,
+  ListAltOutlined,
+  PlayArrow,
+} from "@mui/icons-material";
 
 const iconsRegistry: Record<string, React.ReactElement> = {
   edit: <EditIcon />,
   copy: <FileCopyIcon />,
   delete: <DeleteOutline />,
   design: <DesignServices />,
+  play: <PlayArrow />,
 };
 
 const StyledMenu = styled((props: MenuProps) => (
@@ -81,6 +91,7 @@ export interface Action {
 export interface Row {
   id: string;
   title: string;
+  subTitle?: string;
 }
 
 interface ExplorerProps {
@@ -93,9 +104,11 @@ interface ExplorerProps {
   onSecondaryAction?: (row: Row, action: Action) => void;
   onClick?: (row: Row) => void;
   showSearch?: boolean;
+  secondaryExpanded?: boolean;
 }
 
 const Explorer = (props: ExplorerProps) => {
+  const [viewMode, setViewMode] = useState<"list" | "card">("card");
   const [currentSelected, setCurrentSelected] = useState<Row | undefined>();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const openSecondaryMenu = Boolean(anchorEl);
@@ -145,89 +158,214 @@ const Explorer = (props: ExplorerProps) => {
 
   return (
     <Stack gap={1} justifyContent="center">
-      {props.showSearch && (
-        <Stack gap={5} direction={"row"} alignItems="center">
-          <Checkbox
-            disableRipple
-            checked={
-              props.rows.length > 0 &&
-              props.rows.length === props.selected?.length
-            }
-            onChange={(e, checked) => {
-              if (props.onSelectionChange) {
-                if (checked) {
-                  props.onSelectionChange(props.rows.map((r) => r.id));
-                } else {
-                  props.onSelectionChange([]);
-                }
+      <Stack gap={2} direction={"row"} alignItems="center">
+        <Checkbox
+          disableRipple
+          checked={
+            props.rows.length > 0 &&
+            props.rows.length === props.selected?.length
+          }
+          onChange={(e, checked) => {
+            if (props.onSelectionChange) {
+              if (checked) {
+                props.onSelectionChange(props.rows.map((r) => r.id));
+              } else {
+                props.onSelectionChange([]);
               }
-            }}
-          />
-          <Typography variant="h6" sx={{ margin: "auto" }}>
-            {props.title}
-          </Typography>
+            }
+          }}
+        />
+        <Typography variant="h6" sx={{ margin: "auto" }}>
+          {props.title}
+        </Typography>
+        <IconButton
+          onClick={() => {
+            if (viewMode === "list") {
+              setViewMode("card");
+            } else {
+              setViewMode("list");
+            }
+          }}
+        >
+          {viewMode === "list" ? <ListAltOutlined /> : <Dashboard />}
+        </IconButton>
+        {props.showSearch && (
           <TextField size="small" autoComplete="off" placeholder="search" />
+        )}
+      </Stack>
+      <Divider />
+      {viewMode === "list" && (
+        <List disablePadding dense>
+          {props.rows.map((r) => {
+            return (
+              <ListItem
+                disablePadding
+                style={{
+                  paddingLeft: 12,
+                }}
+                key={r.id}
+                onClick={() => props.onClick && props.onClick(r)}
+                secondaryAction={
+                  props.secondaryExpanded ? (
+                    <Stack gap={2} direction={"row"}>
+                      {(props.secondaryActions || []).map((a) => {
+                        return (
+                          <IconButton
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              props.onSecondaryAction &&
+                                props.onSecondaryAction(r, a);
+                            }}
+                          >
+                            {a.startIcon && iconsRegistry[a.startIcon]}
+                          </IconButton>
+                        );
+                      })}
+                    </Stack>
+                  ) : (
+                    <IconButton
+                      aria-label="more"
+                      id="long-button"
+                      aria-controls={
+                        openSecondaryMenu ? "long-menu" : undefined
+                      }
+                      aria-expanded={openSecondaryMenu ? "true" : undefined}
+                      aria-haspopup="true"
+                      onClick={(e) => handleSecondaryMenuClick(e, r)}
+                    >
+                      <MoreVertIcon />
+                    </IconButton>
+                  )
+                }
+              >
+                {props.selectable && (
+                  <ListItemIcon>
+                    <Checkbox
+                      sx={{ paddingRight: 1 }}
+                      edge="start"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                      }}
+                      checked={(props.selected || []).includes(r.id)}
+                      onChange={(e, checked) => {
+                        if (props.onSelectionChange) {
+                          if (checked) {
+                            props.onSelectionChange([
+                              ...(props.selected || []),
+                              r.id,
+                            ]);
+                          } else {
+                            props.onSelectionChange(
+                              (props.selected || []).filter((s) => s !== r.id)
+                            );
+                          }
+                        }
+                      }}
+                      tabIndex={-1}
+                    />
+                  </ListItemIcon>
+                )}
+                <ListItemButton>
+                  <ListItemText
+                    primary={<Typography variant="body1">{r.title}</Typography>}
+                  />
+                </ListItemButton>
+              </ListItem>
+            );
+          })}
+        </List>
+      )}
+
+      {viewMode === "card" && (
+        <Stack padding={1} gap={2} direction={"row"}>
+          {props.rows.map((r) => {
+            return (
+              <Card
+                sx={{ minWidth: 200, cursor: "pointer" }}
+                variant="outlined"
+                onClick={() => props.onClick && props.onClick(r)}
+              >
+                <React.Fragment>
+                  <CardContent>
+                    <Stack
+                      gap={1}
+                      padding={1}
+                      alignItems={"center"}
+                      direction={"row"}
+                    >
+                      <Checkbox
+                        sx={{ paddingRight: 1 }}
+                        edge="start"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                        }}
+                        checked={(props.selected || []).includes(r.id)}
+                        onChange={(e, checked) => {
+                          if (props.onSelectionChange) {
+                            if (checked) {
+                              props.onSelectionChange([
+                                ...(props.selected || []),
+                                r.id,
+                              ]);
+                            } else {
+                              props.onSelectionChange(
+                                (props.selected || []).filter((s) => s !== r.id)
+                              );
+                            }
+                          }
+                        }}
+                        tabIndex={-1}
+                      />
+                      <Typography
+                        sx={{ fontSize: 14 }}
+                        color="text.secondary"
+                        gutterBottom
+                      >
+                        {r.subTitle}
+                      </Typography>
+                    </Stack>
+                    <Typography variant="h5" component="div">
+                      {r.title}
+                    </Typography>
+                  </CardContent>
+                  <CardActions sx={{ justifyContent: "flex-end" }}>
+                    {props.secondaryExpanded ? (
+                      <Stack gap={2} direction={"row"}>
+                        {(props.secondaryActions || []).map((a) => {
+                          return (
+                            <IconButton
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                props.onSecondaryAction &&
+                                  props.onSecondaryAction(r, a);
+                              }}
+                            >
+                              {a.startIcon && iconsRegistry[a.startIcon]}
+                            </IconButton>
+                          );
+                        })}
+                      </Stack>
+                    ) : (
+                      <IconButton
+                        aria-label="more"
+                        id="long-button"
+                        aria-controls={
+                          openSecondaryMenu ? "long-menu" : undefined
+                        }
+                        aria-expanded={openSecondaryMenu ? "true" : undefined}
+                        aria-haspopup="true"
+                        onClick={(e) => handleSecondaryMenuClick(e, r)}
+                      >
+                        <MoreVertIcon />
+                      </IconButton>
+                    )}
+                  </CardActions>
+                </React.Fragment>
+              </Card>
+            );
+          })}
         </Stack>
       )}
-      <Divider />
-      <List disablePadding dense>
-        {props.rows.map((r) => {
-          return (
-            <ListItem
-              style={{
-                paddingLeft: 12,
-              }}
-              key={r.id}
-              onClick={() => props.onClick && props.onClick(r)}
-              secondaryAction={
-                <IconButton
-                  aria-label="more"
-                  id="long-button"
-                  aria-controls={openSecondaryMenu ? "long-menu" : undefined}
-                  aria-expanded={openSecondaryMenu ? "true" : undefined}
-                  aria-haspopup="true"
-                  onClick={(e) => handleSecondaryMenuClick(e, r)}
-                >
-                  <MoreVertIcon />
-                </IconButton>
-              }
-            >
-              {props.selectable && (
-                <ListItemIcon>
-                  <Checkbox
-                    sx={{ paddingRight: 1 }}
-                    edge="start"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                    }}
-                    checked={(props.selected || []).includes(r.id)}
-                    onChange={(e, checked) => {
-                      if (props.onSelectionChange) {
-                        if (checked) {
-                          props.onSelectionChange([
-                            ...(props.selected || []),
-                            r.id,
-                          ]);
-                        } else {
-                          props.onSelectionChange(
-                            (props.selected || []).filter((s) => s !== r.id)
-                          );
-                        }
-                      }
-                    }}
-                    tabIndex={-1}
-                  />
-                </ListItemIcon>
-              )}
-              <ListItemButton>
-                <ListItemText
-                  primary={<Typography variant="body1">{r.title}</Typography>}
-                />
-              </ListItemButton>
-            </ListItem>
-          );
-        })}
-      </List>
 
       {props.secondaryActions &&
         getSecondaryActionsMenu(props.secondaryActions)}
