@@ -87,12 +87,12 @@ const DesignerHome = () => {
       {action ? (
         <Stack>
           <Stack
-            margin={1}
-            paddingRight={2}
+            padding={1}
             gap={2}
             direction={"row"}
             alignItems={"center"}
             justifyContent={"center"}
+            borderBottom={"1px solid rgb(128,128,128, 0.4)"}
           >
             <IconButton
               size="small"

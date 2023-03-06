@@ -1,11 +1,14 @@
 import {
+  Button,
   createTheme,
   CssBaseline,
+  Snackbar,
   Stack,
   styled,
   Tab,
   Tabs,
   ThemeProvider,
+  Typography,
 } from "@mui/material";
 import AppMenu from "./AppMenu";
 import { Outlet } from "react-router-dom";
@@ -13,16 +16,16 @@ import "@fontsource/roboto/300.css";
 import "@fontsource/roboto/400.css";
 import "@fontsource/roboto/500.css";
 import "@fontsource/roboto/700.css";
+import MuiAlert from "@mui/material/Alert";
 import { useState, useEffect } from "react";
-import { Settings } from "./Constants";
-import { readSettings } from "./services";
+import { Settings, SnackMessage } from "./Constants";
+import { publish, readSettings } from "./services";
 
 const darkTheme = createTheme({
   palette: {
     mode: "dark",
   },
-  components: {
-  }
+  components: {},
 });
 
 const lightTheme = createTheme({
@@ -86,6 +89,8 @@ const App = () => {
     queries: [],
   });
 
+  const [snackMessage, setSnackMessage] = useState<SnackMessage | undefined>();
+
   const refresh = () => {
     readSettings(
       (s) => {
@@ -98,24 +103,63 @@ const App = () => {
   useEffect(() => {
     refresh();
   }, []);
+
+  const handleClose = (e: React.SyntheticEvent | Event, reason?: string) => {
+    if (reason === "clickaway") {
+      return;
+    }
+    setSnackMessage(undefined);
+  };
+
   return (
     <ThemeProvider theme={settings.theme === "dark" ? darkTheme : lightTheme}>
       <CssBaseline />
       <main>
         <Stack
-          paddingLeft={2}
-          paddingRight={2}
+          paddingLeft={4}
+          paddingRight={18}
           direction={"row"}
           alignItems={"center"}
           sx={{ minHeight: 56 }}
+          borderBottom={"1px solid rgb(128,128,128, 0.4)"}
         >
-          {"App Studio"}
+          <Typography variant="h6">AppStudio</Typography>
+          <Button
+            onClick={() => {
+              publish(
+                [],
+                () => {
+                  setSnackMessage({
+                    message: "App published successfully",
+                    severity: "info",
+                  });
+                },
+                () => {}
+              );
+            }}
+            sx={{ marginLeft: "auto" }}
+            variant="contained"
+          >
+            Publish
+          </Button>
         </Stack>
         <Stack gap={2} direction={"row"}>
           <AppMenu />
           <Outlet />
         </Stack>
       </main>
+      {snackMessage && (
+        <Snackbar
+          anchorOrigin={{ vertical: "top", horizontal: "center" }}
+          open={snackMessage.message !== undefined}
+          autoHideDuration={1200}
+          onClose={handleClose}
+        >
+          <MuiAlert severity={snackMessage.severity}>
+            {snackMessage.message}
+          </MuiAlert>
+        </Snackbar>
+      )}
     </ThemeProvider>
   );
 };
