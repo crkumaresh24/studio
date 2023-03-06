@@ -126,7 +126,6 @@ const DesignerHome = () => {
                 save(() => {
                   readApp(
                     (app) => {
-                      console.log(app.store);
                       executeAction(app, [action], "Hello ! Actions", log);
                     },
                     () => {}

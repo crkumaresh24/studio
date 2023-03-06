@@ -24,6 +24,7 @@ const getStyleForType = (data: ToolData): SxProps => {
       alignContent: "center",
       flex: 1,
       color: "black",
+      border: "1px solid lightgrey",
     };
   } else {
     return {
@@ -37,6 +38,7 @@ const getStyleForType = (data: ToolData): SxProps => {
       alignContent: "center",
       flex: 1,
       color: "black",
+      border: "1px solid lightgrey",
     };
   }
 };

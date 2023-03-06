@@ -18,12 +18,16 @@ import {
   Card,
   CardContent,
   CardActions,
+  Button,
+  useTheme,
 } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import FileCopyIcon from "@mui/icons-material/FileCopy";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import React, { useState } from "react";
 import {
+  CheckBoxOutlineBlank,
+  CheckCircleOutline,
   Dashboard,
   DeleteOutline,
   DesignServices,
@@ -86,6 +90,7 @@ export interface Action {
   id: string;
   title: string;
   startIcon?: string;
+  startIconColor?: string;
 }
 
 export interface Row {
@@ -108,6 +113,7 @@ interface ExplorerProps {
 }
 
 const Explorer = (props: ExplorerProps) => {
+  const theme = useTheme();
   const [viewMode, setViewMode] = useState<"list" | "card">("card");
   const [currentSelected, setCurrentSelected] = useState<Row | undefined>();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
@@ -156,25 +162,29 @@ const Explorer = (props: ExplorerProps) => {
     );
   };
 
+  const selectedAll =
+    props.rows.length > 0 && props.rows.length === props.selected?.length;
+
   return (
     <Stack gap={1} justifyContent="center">
       <Stack gap={2} direction={"row"} alignItems="center">
-        <Checkbox
-          disableRipple
-          checked={
-            props.rows.length > 0 &&
-            props.rows.length === props.selected?.length
+        <Button
+          variant="contained"
+          startIcon={
+            selectedAll ? <CheckCircleOutline /> : <CheckBoxOutlineBlank />
           }
-          onChange={(e, checked) => {
+          onClick={(e) => {
             if (props.onSelectionChange) {
-              if (checked) {
+              if (!selectedAll) {
                 props.onSelectionChange(props.rows.map((r) => r.id));
               } else {
                 props.onSelectionChange([]);
               }
             }
           }}
-        />
+        >
+          All
+        </Button>
         <Typography variant="h6" sx={{ margin: "auto" }}>
           {props.title}
         </Typography>
@@ -279,11 +289,24 @@ const Explorer = (props: ExplorerProps) => {
       {viewMode === "card" && (
         <Stack padding={1} gap={2} direction={"row"}>
           {props.rows.map((r) => {
+            const isSelected = (props.selected || []).includes(r.id);
             return (
               <Card
-                sx={{ minWidth: 200, cursor: "pointer" }}
+                sx={{
+                  minWidth: 200,
+                  cursor: "pointer",
+                  border:
+                    "1px solid " +
+                    (isSelected
+                      ? theme.palette.primary.main
+                      : "(171, 183, 183);, 1"),
+                  borderRadius: 2,
+                }}
                 variant="outlined"
-                onClick={() => props.onClick && props.onClick(r)}
+                onClick={(e) => {
+                  e.preventDefault();
+                  props.onClick && props.onClick(r);
+                }}
               >
                 <React.Fragment>
                   <CardContent>
@@ -299,7 +322,7 @@ const Explorer = (props: ExplorerProps) => {
                         onClick={(e) => {
                           e.stopPropagation();
                         }}
-                        checked={(props.selected || []).includes(r.id)}
+                        checked={isSelected}
                         onChange={(e, checked) => {
                           if (props.onSelectionChange) {
                             if (checked) {
@@ -316,17 +339,10 @@ const Explorer = (props: ExplorerProps) => {
                         }}
                         tabIndex={-1}
                       />
-                      <Typography
-                        sx={{ fontSize: 14 }}
-                        color="text.secondary"
-                        gutterBottom
-                      >
-                        {r.subTitle}
+                      <Typography variant="h5" component="div">
+                        {r.title}
                       </Typography>
                     </Stack>
-                    <Typography variant="h5" component="div">
-                      {r.title}
-                    </Typography>
                   </CardContent>
                   <CardActions sx={{ justifyContent: "flex-end" }}>
                     {props.secondaryExpanded ? (
@@ -334,6 +350,7 @@ const Explorer = (props: ExplorerProps) => {
                         {(props.secondaryActions || []).map((a) => {
                           return (
                             <IconButton
+                              style={{ color: a.startIconColor }}
                               onClick={(e) => {
                                 e.stopPropagation();
                                 props.onSecondaryAction &&

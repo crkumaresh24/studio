@@ -1,10 +1,14 @@
 import { App } from "../../../Constants";
 import { general } from "./GeneralActionsExector";
+import { json } from "./JSONExecutor";
 import { services } from "./ServiceActionsExecutor";
+import { store } from "./StoreExector";
 
 let executors: any = {
   general,
   services,
+  json,
+  components: store,
 };
 
 export const ACTION_INDEX_0 = "0";

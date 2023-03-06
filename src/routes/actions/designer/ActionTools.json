@@ -135,6 +135,7 @@
           {
             "label": "Expression",
             "type": "string",
+            "prop": "expression",
             "rows": 10
           }
         ],

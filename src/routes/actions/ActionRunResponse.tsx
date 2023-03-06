@@ -1,4 +1,4 @@
-import { Box, Paper, Stack, Typography } from "@mui/material";
+import { Box, Stack, Typography } from "@mui/material";
 import { useState } from "react";
 import { StyledTab, StyledTabs } from "../../App";
 import JsonEditor from "../../libs/JsonEditor";
@@ -9,7 +9,7 @@ interface ActionRunResponseProps {
 }
 
 const ActionRunReponse = (props: ActionRunResponseProps) => {
-  const [selectedTab, setSelectedTab] = useState(props.store ? 0 : 1);
+  const [selectedTab, setSelectedTab] = useState(0);
   return (
     <Stack minHeight={500}>
       <StyledTabs
@@ -17,11 +17,22 @@ const ActionRunReponse = (props: ActionRunResponseProps) => {
         onChange={(_, value) => setSelectedTab(value)}
         aria-label="basic tabs example"
       >
-        <StyledTab label="Store" />
         <StyledTab label="Console" />
       </StyledTabs>
 
-      {selectedTab === 0 && props.store && (
+      {selectedTab === 0 && props.logs && (
+        <Stack padding={1}>
+          {props.logs.map((log) => {
+            return (
+              <Box sx={{ borderBottom: "1px solid rgba(171, 183, 183, 0.4)" }}>
+                <Typography padding={1}>{JSON.stringify(log)}</Typography>
+              </Box>
+            );
+          })}
+        </Stack>
+      )}
+
+      {selectedTab === 1 && props.store && (
         <Box padding={2} sx={{ minHeight: 500 }}>
           <div className="jse-theme-dark">
             <JsonEditor
@@ -34,16 +45,6 @@ const ActionRunReponse = (props: ActionRunResponseProps) => {
             />
           </div>
         </Box>
-      )}
-
-      {selectedTab === 1 && props.logs && (
-        <Stack padding={1}>
-          <Paper sx={{ padding: 1 }}>
-            {props.logs.map((log) => {
-              return <Typography padding={1} borderBottom={1}>{log}</Typography>;
-            })}
-          </Paper>
-        </Stack>
       )}
     </Stack>
   );

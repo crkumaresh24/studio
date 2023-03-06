@@ -38,3 +38,23 @@ code {
   min-height: 500px;
   max-height: "70vh";
 }
+
+.AppMenuList .MuiListItem-root:hover {
+  border: 1px solid grey;
+  border-top-right-radius: 5px;
+  border-bottom-right-radius: 5px;
+}
+
+.AppMenuList .Mui-selected {
+  border: 1px solid grey;
+  border-top-right-radius: 5px;
+  border-bottom-right-radius: 5px;
+}
+
+.MuiTreeItem-content:hover {
+  border-radius: 8px;
+}
+
+.Mui-selected {
+  border-radius: 8px;
+}
