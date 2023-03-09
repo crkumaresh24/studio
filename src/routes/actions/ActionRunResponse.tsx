@@ -15,7 +15,6 @@ const ActionRunReponse = (props: ActionRunResponseProps) => {
       <StyledTabs
         value={selectedTab}
         onChange={(_, value) => setSelectedTab(value)}
-        aria-label="basic tabs example"
       >
         <StyledTab label="Console" />
       </StyledTabs>

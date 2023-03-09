@@ -9,7 +9,7 @@ import {
 } from "@mui/material";
 import { v4 as uuidv4 } from "uuid";
 import { useState } from "react";
-import toolsSpec from "./ActionTools.json";
+import toolsSpec from "../../../specs/ActionTools.json";
 
 export interface ToolData {
   label: string;

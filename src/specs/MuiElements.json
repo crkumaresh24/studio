@@ -1,0 +1,39 @@
+{
+  "Label": {
+    "props": [
+      {
+        "id": "0.0",
+        "path": "$.text",
+        "name": "text"
+      }
+    ]
+  },
+  "TextFiled": {
+    "props": [
+      {
+        "id": "0.0",
+        "path": "$.value",
+        "name": "value"
+      },
+      {
+        "id": "0.1",
+        "path": "$.type",
+        "name": "type"
+      }
+    ]
+  },
+  "Button": {
+    "props": [
+      {
+        "id": "0.0",
+        "path": "$.text",
+        "name": "text"
+      },
+      {
+        "id": "0.1",
+        "path": "$.size",
+        "name": "size"
+      }
+    ]
+  }
+}

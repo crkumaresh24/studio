@@ -21,6 +21,8 @@ import SaveComponent from "./SaveComponent";
 import { useLocation } from "react-router-dom";
 
 export interface Component {
+  type: "ui" | "other";
+  subType?: string;
   tree: TreeNode;
   defaultValues: Record<string, DATA_VALUE>;
 }
@@ -37,6 +39,7 @@ const ComponentsExplorer = () => {
   const [page, setPage] = useState<"list" | "create" | "edit">("list");
   const [snackMessage, setSnackMessage] = useState<SnackMessage | undefined>();
   const [component, setComponent] = useState<Component>({
+    type: "other",
     tree: getRootTree("props"),
     defaultValues: {},
   });
@@ -182,6 +185,7 @@ const ComponentsExplorer = () => {
             onBack={() => {
               setComponent({
                 tree: getRootTree("props"),
+                type: "other",
                 defaultValues: {},
               });
               setPage("list");

@@ -117,7 +117,7 @@ const App = () => {
       <main>
         <Stack
           paddingLeft={4}
-          paddingRight={18}
+          paddingRight={9}
           direction={"row"}
           alignItems={"center"}
           sx={{ minHeight: 56 }}
@@ -143,7 +143,7 @@ const App = () => {
             Publish
           </Button>
         </Stack>
-        <Stack gap={2} direction={"row"}>
+        <Stack marginTop={1} gap={2} direction={"row"}>
           <AppMenu />
           <Outlet />
         </Stack>
